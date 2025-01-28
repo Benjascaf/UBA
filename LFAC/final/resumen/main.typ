@@ -405,7 +405,7 @@ Y tomemos $deltaSombrero_N (q, alpha) = deltaSombrero_lambda (q, alpha)$. Para e
   #align(center)[$deltaSombrero_N (P, alpha) = union.big_(q in P) deltaSombrero_N (q, alpha) = union.big_(q in P) deltaSombrero_lambda (q, alpha) = deltaSombrero_lambda (P, alpha)$] 
 
   Luego, con $P = deltaSombrero_lambda (q_0, omega)$ tenemos que ambas funciones de transición son \"equivalentes\" pues: \ 
-  #align(center)[$deltaSombrero_N (q_0, omega) = deltaSombrero_N (deltaSombrero_lambda (q_0, omega alpha), alpha) = deltaSombrero_lambda (deltaSombrero_lambda (q_0, omega), alpha) = deltaSombrero_lambda (q_0, omega alpha)$]
+  #align(center)[$deltaSombrero_N (q_0, omega) = deltaSombrero_N (deltaSombrero_lambda (q_0, omega), alpha) = deltaSombrero_lambda (deltaSombrero_lambda (q_0, omega), alpha) = deltaSombrero_lambda (q_0, omega alpha)$]
 
   Ahora queda ver que $LenguajeDe(N) = LenguajeDe(E).$ Para $x = lambda$ tenemos
   
@@ -647,23 +647,80 @@ Con esto queda demostrado que $LenguajeDe(M) = LenguajeDe(G)$. \
   
   + Sea M = $angle.l Q, Sigma, delta, q_0, {q_f} angle.r$ un AFD tal que para todos los símbolos $alpha in Sigma$ se cumple que $delta(q_0, alpha) = delta(q_f, alpha)$ \
   
-    *a)* Demostrar que para todo $omega eq.not lambda, #h(.5em) deltaSombrero(q_0, omega) = deltaSombrero(q_f, omega)$ \
+    *a)* Demostrar que para todo $omega eq.not lambda, #h(.5em) deltaSombrero(q_0, omega) = deltaSombrero(q_f, omega)$ 
+    
+    \
+
+    #rect[ \ #align(center)[#proof[ 
+        Por inducción sobre $omega$: \  
+        - Caso base: $omega = alpha$ \
+        $deltaSombrero(q_0, alpha) = delta(q_0, alpha) = delta(q_f, alpha) = deltaSombrero(q_f, alpha)$
+        - Paso inductivo: $omega = x alpha$ \
+        $deltaSombrero(q_0, x alpha) = delta(deltaSombrero(q_0, x), alpha) =_(H I) delta(deltaSombrero(q_f, x), alpha) =_("def" deltaSombrero) deltaSombrero(q_f, x alpha)$
+    ]
+      ] \ ]
 
     *b)* Demostrar que si $omega$ es una cadena no vacía en $LenguajeDe(M)$, entonces para toda k > 0, $omega^k$ también pertenece a $LenguajeDe(M)$
 
-  + Demostrar por inducción sobre $omega$ que si $deltaSombrero_D (q_0, omega) = p $ entonces $deltaSombrero_N (q_0, omega) = {p}$
+    \ 
+
+    #rect[ \ #align(center)[#proof[ 
+        Por inducción sobre k: \  
+        - Caso base: $k = 1$ \
+        $omega^1 = omega$ y por enunciado $omega in LenguajeDe(M)$
+        - Paso inductivo: $k = n + 1$ \
+        $omega^(n + 1) in LenguajeDe(M) sii deltaSombrero(q_0, w^(n+1)) sect F eq.not emptyset sii deltaSombrero(q_0, w^(n+1)) = q_f sii_("Por 1)") deltaSombrero(deltaSombrero(q_0, w^n), w) = q_f sii_(H I) deltaSombrero(q_f, w) = q_f$ que sabemos es cierto por a)
+    ]
+      ] \ ]
+
   
   + Sea N un AFND tal que tenga a lo sumo una opción para cualquier estado y símbolo \ (es decir, |$delta(q, alpha)| = 1$), entonces el AFD D construido tiene la misma cantidad de transiciones y estados más las trancisiones necesarias para ir a un  nuevo estado trampa cuando una transición no esté definida para un estado particular 
 
   + Demostrar que para todo AFND-$lambda$ E existe un AFD D tal que $LenguajeDe(E) = LenguajeDe(D)$ (Usando la demo del libro)
   
     \
+
+    #rect[ \ #align(center)[#proof[ 
+        Sea E = $angle.l Q_lambda, Sigma, delta_lambda, q_0, F_lambda angle.r$ un AFND-$lambda$. Definimos \ D = $angle.l Q_D, Sigma, delta_D, q_D, F_D angle.r$ de la siguiente manera: \  
+        - $Q_D = PartesDe(Q_lambda)$. En particular, va a ocurrir que todos los estados accesibles de D son subconjuntos de Q_lambda cerrados por la clausura lambda, es decir sea S el subconjunto, $S = cl(S)$
+        - $q_D = cl(q_0)$
+        - $F_D = {S subset.eq Q_lambda : S sect F_lambda eq.not emptyset}$
+
+        - Para cada $S subset.eq Q_lambda$ y $alpha in Sigma$, definimos: \
+          - $delta_D (S, alpha) = cl({r in Q_lambda: exists p in S and r in delta_lambda (p, a)})$
+
+      Ahora probamos que para una cadena $w in SigmaEstrella, w in LenguajeDe(E) sii w in LenguajeDe(D)$: 
+        - $implicaVuelta$) Simplemente podemos agregar transiciones $lambda$ en todos los estados hacia el estado representando el estado trampa, y convertimos cada una de las transiciones en el equivalente de conjuntos (i.e en vez de $q_i, {q_i}$ en las funciones de transición)
+
+        - $implica)$ Primero demostramos por inducción sobre la longitud de la cadena $w$ que $deltaSombrero_lambda (q_0, w) = deltaSombrero_D (q_D, w)$:
+          - |w| = 0: \ 
+          $deltaSombrero_lambda (q_0, lambda) = cl(q_0) = q_D = deltaSombrero_D (q_D, lambda)$
+          - $|w| gt 0, w = x a$: \
+          $deltaSombrero_lambda (q_0, x a) = cl({r in Q_lambda : exists p in deltaSombrero_lambda (q_0, x) and r in delta_lambda (p, a)}) = cl({r in Q_lambda : exists p in deltaSombrero_D (q_D, x) and r in delta_lambda (p, a)}) = deltaSombrero_D (q_D, x a)$ 
+    ]
+      ] \ ]
   
 
   + Indicar V o F y justificar
-    - Si $D = tupla$ es un AFD entonces reconoce al menos |Q| palabras distintas, es decir $\# LenguajeDe(D) gt.eq |Q|$
+    - Si $D = tupla$ es un AFD entonces reconoce al menos |Q| palabras distintas, es decir $\# LenguajeDe(D) gt.eq |Q|$ 
+
+    \
+
+    #rect[ \ #align(center)[#proof[ 
+      
+    ]
+      ] \ ]
+     
     
-    - Si $N = tupla$ es un AFND entonces todas las palabras de $LenguajeDe(N)$ tienen longitud menor o igual a $|Q|^2$
+    - Si $N = tupla$ es un AFND entonces todas las palabras de $LenguajeDe(N)$ tienen longitud menor o igual a $|Q|^2$ 
+
+    \ 
+
+    #rect[ \ #align(center)[Falso. Como contraejemplo, para $Sigma = {0, 1}, L = {w | 1 in.not w}, $ tenemos el AFND: \
+      #automaton((
+      q0: (q1:0, q0:"0,1")
+    ))
+      ] \ ]
     
   + Cuántos AFD hay con |Q| = 2 y $|Sigma| = 3?$
 

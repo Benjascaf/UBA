@@ -564,13 +564,325 @@ Con esto queda demostrado que $LenguajeDe(M) = LenguajeDe(G)$. \
 
 
 
+= Expresiones Regulares
+  #definition[Una expresión regular es una cadena de símbolos de un alfabeto que denotan un lenguaje sobre el alfabeto. Las expresiones regulares se construyen a partir de los siguientes elementos: \
+
+  - $nothing$ es una expresión regular que representa el lenguaje vacío $emptyset$
+  - $lambda$ es una expresión regular que representa el lenguaje que contiene sólo la cadena vacía ${lambda}$
+  - $a$ es una expresión regular que representa el lenguaje que contiene la cadena $a$ para cada $a in Sigma$ (${a}$)
+  - Si $r$ y $s$ son expresiones regulares que denotan los lenguajes R y S, entonces:
+    - $(r + s)= (r | s)$ es una expresión regular que representa la unión de los lenguajes R y S.
+    - $(r s)$ es una expresión regular que representa la concatenación de los lenguajes R y S.
+    - $(r^*)$ es una expresión regular que representa la clausura de Kleene del lenguaje representado por $r$.
+    - $r^+$ representa la clausura positiva del lenguaje representado por $r$.
+  ]
+  #example[Algunos ejemplos de expresiones regulares son: \
+  - $a + b$ representa el lenguaje que contiene las cadenas $a$ y $b$
+  - $a^* b$ representa el lenguaje que contiene las cadenas que comienzan con una cantidad arbitraria de $a$ seguida de una $b$
+  - $(a + b)^*$ representa el lenguaje que contiene todas las cadenas que contienen únicamente $a$ y $b$]
+  #theorem[Dada una expresión regular $r$, existe un AFND-$lambda$ con un solo estado final y sin transiciones a partir del mismo $E = angle.l Q, Sigma, delta, q_0, F angle.r$ tal que $LenguajeDe(r) = LenguajeDe(E)$] 
+
+  #proof[Por inducción sobre la estructura de la expresión regular r: \
+
+  - Caso base: $r = emptyset$ \
+    #align(center)[
+      #automaton((
+  q0: (), qf:(),))
+]
+
+
+  - Caso base: $r = lambda$ \
+   #align(center)[
+      #automaton((
+  q0: ()))
+]
+
+  - Caso base: $r = a$ \  
+    #align(center)[
+      #automaton((
+  q0: (qf: "a"), qf:(),))
+]
+
+  - Caso inductivo: $r = r_1 + r_2$ 
+    Por H.I, existen $M_1 = AF(Q_1, Sigma_1, delta_1, q_1, {f_1})$ y $M_2 = AF(Q_2, Sigma_2, delta_2, q_2, {f_2})$ tales que $LenguajeDe(M_1) = LenguajeDe(r_1)$ y $LenguajeDe(M_2) = LenguajeDe(r_2)$. Sea $M = AF(Q_1 union Q_2 union {q_0, q_f}, Sigma_1 union Sigma_2, delta, q_0, {q_f})$: 
 
 
 
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: circle, line, content
+    import draw: state, transition
+
+    state((0, 0), "q0", label: $q_0$, initial: "")
 
 
+    circle((6,2), name: "M1", radius: (3.2, 1.6), stroke: black, fill: auto)
+    content((rel: (-2.5, 1.5), to: "M1"), text($M_1$))
+    state((4, 2), "q1", label: $q_1$)
+    state((8, 2), "f1", label: $f_1$)
+
+    circle((6,-2), name: "M2", radius: (3.2, 1.6), stroke: black, fill: auto)
+    content((rel: (-2.5, 1.5), to: "M2"), text($M_2$))
+    state((4, -2), "q2", label: $q_2$)
+    state((8, -2), "f2", label: $f_2$)
+
+    state((12, 0), "qf", label: $q_f$, final:true)
+
+    transition("q0", "q1", label: $lambda$, curve: 1)
+    transition("q0", "q2", label: $lambda$, curve: -1)
+
+    transition("f1", "qf", label: $lambda$, curve: 1)
+    transition("f2", "qf", label: $lambda$, curve: -1)
+  })
+]
+
+    - $delta(q_0, lambda) = {q_1, q_2}$.
+    - $delta(q, a) = delta_1(q, a)$ para $q in Q_1 - {f_1}$ y $a in Sigma_1 union {lambda}$.
+    - $delta(q, a) = delta_2(q, a)$ para $q in Q_2 - {f_2}$ y $a in Sigma_2 union {lambda}$.
+    - $delta(f_1, lambda) = delta(f_2, lambda) = {q_f}$.
+
+De manera informal, podemos alcanzar, a partir del nuevo estado inicial, cualquiera de los estados iniciales correspondientes a los autómatas para $r_1$ y $r_2$ mediante transiciones $lambda$. Luego, podemos seguir las transiciones de los autómatas hasta llegar a sus estados previamente finales correspondientes, y luego tomar una úlima transición $lambda$ al nuevo estado final.
+
+  - Caso inductivo: $r = r_1 r_2$ \
+    Por HI existen $M_1 = AF(Q_1, Sigma_1, delta_1, q_1, {f_1})$ y $M_2 = AF(Q_2, Sigma_2, delta_2, q_2, {f_2})$ tales que $LenguajeDe(M_1) = LenguajeDe(r_1)$ y $LenguajeDe(M_2) = LenguajeDe(r_2)$. \
+   Entones sea $M = AF(Q_1 union Q_2, Sigma_1 union Sigma_2, delta, q_1, {f_2})$: \
+
+    #align(center)[
+      #cetz.canvas({
+        import cetz.draw: circle, line, content
+        import draw: state, transition
+
+        circle((2,0), name: "M1", radius: (3.2, 1.6), stroke: black, fill: auto)
+        content((rel: (-2.5, 1.5), to: "M1"), text($M_1$))
+        state((0.3, 0), "q1", label: $q_1$, initial: "")
+        state((4, 0), "f1", label: $f_1$)
+
+        circle((10,0), name: "M2", radius: (3.2, 1.6), stroke: black, fill: auto)
+        content((rel: (-2.5, 1.5), to: "M2"), text($M_2$))
+        state((8, 0), "q2", label: $q_2$)
+        state((12, 0), "f2", label: $f_2$, final: true)
+
+        transition("f1", "q2", label: $lambda$, curve: 0.5)
+      })
+    ]
+
+    - $delta(q, a) = delta_1(q, a)$ para $q in Q_1 - {f_1}$ y $a in Sigma_1 union {lambda}$.
+    - $delta(f_1, lambda) = {q_2}$.
+    - $delta(q, a) = delta_2(q, a)$ para $q in Q_2 - {f_2}$ y $a in Sigma_2 union {lambda}$. \
 
 
+  - Caso inductivo: $r = r_1^*$ \
+    Por HI existe $M_1 = AF(Q_1, Sigma_1, delta_1, q_1, {f_1})$          tal que $LenguajeDe(M_1) = LenguajeDe(r_1)$. \
+    Entonces, podemos construir el autómata $M = AF(Q_1 union {q_0, f_0}, Sigma_1, delta, q_0, {f_0})$. \
+
+    #align(center)[
+      #cetz.canvas({
+        import cetz.draw: circle, line, content
+        import draw: state, transition
+
+        circle((6,0), name: "M1", radius: (3.2, 1.6), stroke: black, fill: auto)
+        content((rel: (-2.5, 1.5), to: "M1"), text($M_1$))
+        state((4, 0), "q1", label: $q_1$)
+        state((8, 0), "f1", label: $f_1$)
+
+        state((0, 0), "q0", label: $q_0$, initial: "")
+        state((12, 0), "f0", label: $f_0$, final: true)
+
+        transition("q0", "q1", label: $lambda$, curve: 0.5)
+        transition("f1", "f0", label: $lambda$, curve: 0.5)
+        transition("f1", "q1", label: $lambda$, curve: 0.8)
+        transition("q0", "f0", label: $lambda$, curve: 2.6) 
+      })
+    ]
+
+    - $delta(q, a) = delta_1(q, a)$ para $q in Q_1 - {f_1}$ y $a in Sigma_1 union {lambda}$.
+    - $delta(q_0, lambda) = delta(f_1, lambda) = {q_1, f_0}$. \
+
+- Caso infuctivo $r = r_1^+$:
+
+    Dado que $r_1^+ = r_1 r_1^*$, queda demostrado por los casos anteriores.
+
+
+  Con esto, queda demostrado que $LenguajeDe(r) = LenguajeDe(M)$ para todo $r$ expresión regular.
+  ]
+
+  #theorem[Dado un AFD $M = angle.l Q, Sigma, delta, q_0, F angle.r$, existe una expresión regular $r$ tal que $LenguajeDe(r) = LenguajeDe(M)$]
+  #proof[Como tenemos que los estados de un autómata son finitos, podemos renombrar los mismos como ${q_1, q_2 ..., q_n} $con $n = |Q|$. Con esto en cuenta, denotamos con $R_(i, j)^k$ al conjunto de cadenas que llevan al autómata de $q_i$ a $q_j$ sin pasar por ningún estado intermedio con índice mayor que k. Luego, definimos $R_(i, j)^k$ inductivamente como: \ 
+
+    - $R_(i, j)^0 = cases({a: delta(q_i, a) = q_j}: #h(.5em) a #h(.5em) in #h(.5em) Sigma #h(.5em) "si " #h(.5em) i #h(.5em) eq.not #h(.5em) j, {a: delta(q_i, a) = q_j} #h(.5em) union #h(.5em) {lambda} #h(.5em) "si " #h(.5em) i #h(.5em) eq #h(.5em) j)$
+
+    - $R_(i, j)^k = R_(i, j)^(k - 1) union R_(i, k)^(k - 1) (R_(k, k)^(k - 1))^* R_(k, j)^(k - 1)$
+    
+    Como paso intermedio, queremos demostrar que para todo $R_(i, j)^k$ existe una e.r $r_(i, j)^k$ tal que $LenguajeDe(r_(i, j)^k) = R_(i, j)^k$ Haciendo inducción sobre k:
+    \ 
+    - Caso base: $k = 0$ \
+      $R_(i, j)^0$ es el conjunto de cadenas de un solo caracter o $lambda$. Por lo que la e.r $r_(i, j)^k$ que lo denota será:
+       - $nothing$ si no existe ningún $a_i$ que una $q_i$ y $q_j$ y i $eq.not$ j 
+       - $lambda$ si no existe ningún $a_i$ que una $q_i$ y $q_j$, pero con i = j
+       - $a_1 | ... | a_p$ con $a_l$ simbolos del alfabeto, si delta(q_i, a_l) = q_j y j $eq.not$ i 
+       - $a_1 | ... | a_p | lambda$ con $a_l$ simbolos del alfabeto, si delta(q_i, a_l) = q_j y j $eq$ i
+    
+    - Paso inductivo: Por H.I tenemos que: 
+      #align(center)[
+    $LenguajeDe(r^(k-1)_(i,k)) = R^(k-1)_(i,k)$ #h(1em) $LenguajeDe(r^(k-1)_(k,k)) = R^(k-1)_(k,k)$ #h(1em) $LenguajeDe(r^(k-1)_(k,j)) = R^(k-1)_(k,j)$ #h(1em) $LenguajeDe(r^(k-1)_(i,j)) = R^(k-1)_(i,j)$
+]
+ \
+
+    Si definimos $r_(i, j)^k = r_(i, k)^(k - 1)(r_(k, k)^(k-1))^*r_(k, j)^(k-1) | r_(i, j)^(k-1)$ tenemos que:
+    #align(center)[
+      $LenguajeDe(r_(i, j)^k) = \
+      LenguajeDe(r_(i, k)^(k - 1)(r_(k, k)^(k-1))^*r_(k, j)^(k-1) | r_(i, j)^(k-1)) = \
+      LenguajeDe(r_(i, k)^(k - 1)(r_(k, k)^(k-1))^*r_(k, j)^(k-1)) union LenguajeDe(r_(i, j)^(k-1)) = \
+      LenguajeDe(r_(i, k)^(k - 1)) LenguajeDe((r_(k, k)^(k-1))^*) LenguajeDe(r_(k, j)^(k-1)) union LenguajeDe(r_(i, j)^(k-1)) = \
+      LenguajeDe(r_(i, k)^(k - 1)) (LenguajeDe(r_(k, k)^(k-1))^*) LenguajeDe(r_(k, j)^(k-1)) union LenguajeDe(r_(i, j)^(k-1)) = \
+      R_(i, k)^(k - 1)(R_(k, k)^(k-1))^*R_(k, j)^(k-1) union R_(i, j)^(k-1) = \
+      R_(i, j)^k$
+    ]
+
+    Con esto en mente, notemos primero que el lenguaje denotado por el autómata M está dado por todas las cadenas que llevan al autómata de $q_0$ a un estado final. Es decir:
+    #align(center)[
+      $LenguajeDe(M) = union.big_(q_j #h(.3em) in #h(.3em) F) R_(1,j)^n$
+    ]
+    Luego, tenemos que:
+    #align(center)[
+      $LenguajeDe(M) = union.big_(q_j #h(.3em) in #h(.3em) F) LenguajeDe(R_(1,j)^n) = union.big_(q_j #h(.3em) in #h(.3em) F) LenguajeDe(r_(1,j)^n) = LenguajeDe(r_(1,j 1)^n | ... | r_(1,j m)^n)$
+    ]
+    Por lo que concluimos que $LenguajeDe(M)$ es denotado por la e.r $r_(1,j 1)^n | ... | r_(1,j m)^n$
+]
+
+
+= Lema de Pumping y propiedades de clausura de los lenguajes regulares
+== Configuración instantánea de un AFD 
+Para comenzar, vamos a introducir una nueva notación que nos facilitará un par de prubas
+#definition[Sea AFD M = #tupla. Una configuración instantánea es un par $(q, w) in Q times Sigma*$ donde $q$ es el estado en el que está el autómata y $w$ es la cadena que resta consumir \ ]
+
+#definition[Llamamos transición a la siguiente relación sobre $Q times SigmaEstrella$: \ 
+
+#align(center)[$(q, w) tack.r (p, beta)$ si ($delta(q, a) = p$ y $w = a beta$)] \ 
+
+De esto  tenemos que $(q, alpha beta) tack.r^* (p, beta) sii deltaSombrero(q, alpha) = p$. Es decir, se puede llegar al estado p consumiendo la cadena $alpha$]
+
+#lema[Sea M = #tupla un AFD. Para todo $q in Q$ y $alpha, beta in SigmaEstrella$ se tiene que: \
+
+  #align(center)[
+    si $(q, alpha beta) tack.r^* (q, beta) "entonces" forall i gt.eq 0, (q, alpha^i beta) tack.r^* (q, beta)$]
+]
+
+#proof[Por inducción sobre i: \
+
+- Caso base: $i = 0$ \
+  $(q, alpha^0 beta) tack.r^0 (q, beta)$
+
+- Paso inductivo: \
+  Supongamos que vale para i, es decir  si $(q, alpha beta) tack.r^* (q, beta) "entonces" (q, alpha^i beta) tack.r^* (q, beta)$. Veamos que vale para i + 1:
+
+  $(q, alpha^(i + 1) beta) = (q, alpha alpha^i beta) implica_("por el antecedente" \ "q asumimos") (q, alpha alpha^i beta) tack.r^* (q, alpha^i beta) tack.r^*_(H I) (q, beta)  $
+
+]
+== Lema de Pumping
+  #theorem[Sea L un lenguaje regular, entonces existe un número n tal que para toda cadena z en L con |z| $gt.eq$ n, existen cadenas $u, v, w$ tales que: \ 
+  - z = $u v w$,
+  - $|u v|$ $lt.eq$ n,
+  - |v| $gt.eq$ 1
+
+   $forall$i $gt.eq$ 0, $u v^i w$ $in$ L
+  ]
+
+  #proof[Sea M un AFD tal que $LenguajeDe(M)$ = L. Sea n su cantidad de estados. Sea z una cadena de longitud $m gt.eq n, z = a_1...a_m$ los símbolos que forman la cadena. 
+        \
+        Para aceptar z usamos $m$ transiciones, por lo tanto pasamos a través de m + 1 estados. Como $m + 1 gt n$, tenemos que necesariamente debemos pasar al menos dos veces por un mismo estado
+        para aceptar la cadena (pigeonhole principle). \ 
+        Sea entonces $q_(l 0) ... q_(l m)$ la sucesión de estados desde $q_0 (q_(l 0))$ hasta un estado final ($q_(l m)$)
+
+        #align(center)[
+        #cetz.canvas({
+          import draw: state, transition
+
+          state((-4, 0), "q0", label: $q_0$, initial: "")
+          state((2, 0), "ql1", label: $q_(l i) = q_(l j)$, radius: (1., 1))
+          state((8, 0), "qf", label: $q_l m$, final: true)
+
+          transition("q0", "ql1", label: $a_1 ... a_i$, curve: .5)
+          transition("ql1", "ql1", label: $a_(i+1) ... a_j$, curve: 1.3)
+          transition("ql1", "qf", label: $a_(j+1) ... a_m$, curve: .4)
+        })
+      ]
+        
+
+
+        Existen entonces j y k mínimos tales que $q_(l j) = q_(l k)$ con $0 lt.eq j lt k lt.eq n$. Esto separa a z en tres subcadenas:
+        - $u = cases(a_1...a_(j) "si " j gt 0, lambda "si " j = 0)$
+        - $v = a_(j + 1)...a_( k)$
+
+        - $w = cases(a_( k + 1)...a_m "si " k lt m, lambda "si " k eq m)$
+
+        Juntando todo esto, tenemos que:
+        #align(center)[$|u v| lt.eq n$ \ 
+                      $|v| gt.eq 0$ ]
+        y que:
+          #align(center)[($q_0, u v w) tack.r^* (q_(l j), v w) tack.r^* (q_(l k), w) tack.r^* (q_(l m), lambda)$]
+
+        Pero como $q_(l j) = q_(l k)$, y por el lema probado en la sección anterior, tenemos que:
+        \
+
+        #align(center)[$forall i gt.eq 0 (q_(l j), v^i w) tack.r^* (q_(l j), w) = (q_(l k), w)$ que tenemos alcanza un estado final]
+
+        Por lo tanto, $u v^i w in $ L, $forall i gt.eq 0$ 
+   ]    
+
+   #example[Sea AFD $M = tupla$, con $|Q|$ = n. Determinar veracidad y justificar:
+        + $LenguajeDe(M)$ es no vacío si y solo si existe $w in SigmaEstrella$ tal que $deltaSombrero(q_0, w) in F y |w| lt n$ 
+
+          #rect[ \  
+            #proof[
+              - $implicaVuelta$) Es trivial ver que el lenguaje no es vacío
+
+              - $implica)$ Supongamos que el lenguaje no es vacío y regular. Entonces, supongamos existe una cadena $z in LenguajeDe(M)$. Hay dos posibilidades, o bien la longitud de la cadena es menor a n, o bien es mayor. En el primer caso, no hace falta demostrar nada mas. En el segundo caso, por el lema de pumping, podemos descomponer la cadena en $u v w$ tal que $|u v| lt.eq n$ y $|v| gt.eq 1$ y estar seguros que para todo i se cumple que $u v^i w in LenguajeDe(M)$. Luego por el lema de pumping, podemos \"pumpear\" a $v$ con i = 0, reduciendo el tamaño de la cadena y repitiendo este proceso hasta llegar a una con longitud menor a n. 
+            ]
+          ]
+        + $LenguajeDe(M)$ es infinito si y solo si existe $w in SigmaEstrella$ tal que $deltaSombrero(q_0, w) in F$ y $n lt.eq |w| lt 2 n$
+
+          #rect[ \
+            #proof[
+              - $implicaVuelta$) Suponemos $z in LenguajeDe(M)$ y $n lt.eq |z| lt 2n$. Por el lema de Pumping, tenemos $z = u v x$ con $|u v| lt.eq n$ y $|v| gt.eq 1$ y $u v^i x in LenguajeDe(M)$ para todo i. Luego $LenguajeDe(M)$ es infinito
+
+              - $implica)$ Supongamos $LenguajeDe(M)$ es infinito y regular. Supongamos también que no existe una cadena z en el lenguaje con longitud entre n y 2n - 1. Primero notemos que como el lenguaje es infinito, necesariamente debe haber cadenas de longitud mayor a n (Pues lo único que puede aportar a la \"infinitez\"(? es que el tamaño de las cadenas pueda ser arbitrariamente grandes)  
+               
+                Sin pérdida de generalidad, supongamos que |z| = 2n (Notar que si la longitud fuese mayor, Simplemente podríamos bombear hacia repetir el argumento hasta que se cumpla esta condición o se llegue al rango deseado. Notar también que no es posible \" saltearse\" el rango pues el mismo es de longitud n + 1, y saltearlo implicaría un ciclo que abarca más que la cantidad de estados del autómata)
+
+                Por Lema de Pumping, tenemos que existen $u, v, x$ tales que $z = u v x$, con $|u v | lt.eq n$, $v gt.eq 1$ y $forall i u v^i x in LenguajeDe(M)$. En particular, $u v^0 x = u x$ está en el lenguaje. 
+
+                Como $|u v x| = 2 n $ y $1lt.eq |v| lt.eq n$ tenemos que $n lt.eq |u x| lt.eq 2 n - 1$, contradiciendo nuestra suposición que dicha cadena no existía.
+            ]
+
+          ]
+
+        == Propiedades de clausura de los lenguajes regulares\
+         === Unión 
+         #theorem[El conjunto de lenguajes regulares incluidos en $SigmaEstrella$  es cerrado respecto de la unión]
+         
+         #proof[
+          Sean $L_1$ y $L_2$ lenguajes regulares. Sea $M_1 = AF(Q_1, Sigma, delta_1, q_1, F_1)$ tal que $LenguajeDe(M_1) = L_1$ y $M_2 = AF(Q_2, Sigma, delta_2, q_2, F_2)$ tal que $LenguajeDe(M_2) = L_2$ y $Q_1 sect Q_2 eq emptyset$. Sea $M = AF(Q_1 union Q_2 union {q_0}, Sigma, delta, q_0, F_1 union F_2)$ tal que:
+
+          - $forall q_1 in Q_1, forall q_2 in Q_2, forall a in Sigma, delta((q_1, q_2), a) = (delta_1(q_1, a), delta_2(q_2, a))$
+
+          - $F = {(f_1, f_2) : f_1 in F_1 or f_2 in F_2}$
+
+          tal que $LenguajeDe(M) = L$. \
+
+          Para probar que $L = L_1 union L_2$, basta probar que: $x in LenguajeDe(M) sii x in LenguajeDe(M_1) or x in LenguajeDe(M_2)$.
+
+          #align(center)[
+            $x in LenguajeDe(M) &sii delta((q_1_0, q_2_0), x) in F \
+            &sii (delta_1(q_1_0, x), delta_2(q_2_0, x)) in F \
+            &sii delta_1(q_1_0, x) in F_1 or delta_2(q_2_0, x) in F_2 \
+            &sii x in LenguajeDe(M_1) or x in LenguajeDe(M_2).$
+          ]
+
+
+         ]
+
+    ]
 
 
 
@@ -706,10 +1018,8 @@ Con esto queda demostrado que $LenguajeDe(M) = LenguajeDe(G)$. \
 
     \
 
-    #rect[ \ #align(center)[#proof[ 
-      
-    ]
-      ] \ ]
+    #rect[ \ #align(center)[#align(center)[Falso. Como contraejemplo, un AFD que no tiene estados finales
+      ] \ ]]
      
     
     - Si $N = tupla$ es un AFND entonces todas las palabras de $LenguajeDe(N)$ tienen longitud menor o igual a $|Q|^2$ 
@@ -718,20 +1028,57 @@ Con esto queda demostrado que $LenguajeDe(M) = LenguajeDe(G)$. \
 
     #rect[ \ #align(center)[Falso. Como contraejemplo, para $Sigma = {0, 1}, L = {w | 1 in.not w}, $ tenemos el AFND: \
       #automaton((
-      q0: (q1:0, q0:"0,1")
+      q0: (q0:"0")
     ))
       ] \ ]
     
   + Cuántos AFD hay con |Q| = 2 y $|Sigma| = 3?$
 
+      \ 
+
+      #rect[ \ #align(center)[#align(center)[La fórmula general para la cantidad de AFDs posibles es $|Q|^(|Q| times |Sigma|) times 2 ^(|Q|) times |Q|$, por lo que para $|Q| = 2$ y $|Sigma| = 3$ tenemos 512 AFDs posibles\
+        ] \ ]]
+
   + Qué pasa al invertir los arcos en un AFD?
+
+    \ 
+
+    #rect[ \ #align(center)[#align(center)[
+      Noc si a esta pregunta le faltó algo más o quería darnos una pista sobre como arrancar a conseguir un AFD para el inverso de un lenguaje
+      ] \ ]]
+
 
   + Qué pasa al invertir los estados finales con no finales en un AFND?
 
-  + Demostrar que para cada AFND $N = tupla$ existe otro AFND-$lambda #h(.5em) E = angle.l Q_lambda, Sigma, delta_lambda, q_(0lambda), F_lambda angle.r$ tal que $LenguajeDe(N) = LenguajeDe(E)$ y $F_lambda$ tiene un solo estado final
+    \ 
 
-  #let tuplaE = $angle.l Q_lambda, Sigma, delta_lambda, q_(0lambda), F_lambda angle.r$
+    #rect[ \ #align(center)[#align(center)[
+      A diferencia de con  un AFD, invertir los estados no nos provee con un autómata que reconozca el complemento al lenguaje original
+      ] \ ]]
 
+  + Demostrar que para cada AFND $N = tupla$ existe otro AFND-$lambda #h(.5em) E = angle.l Q_lambda, Sigma, delta_lambda, q_(0), F_lambda angle.r$ tal que $LenguajeDe(N) = LenguajeDe(E)$ y $F_lambda$ tiene un solo estado final
+
+   #let tuplaE = $angle.l Q_lambda, Sigma, delta_lambda, q_(0lambda), F_lambda angle.r$  
+
+    
+   
+   #rect[ #proof[Definimos E de la siguiente manera: \
+    - $Q_lambda = Q union {q_f}$, donde $q_f$ es un nuevo estado final
+    - $F_lambda = {q_f}$
+    - $delta_lambda (q, alpha) = delta(q, alpha)$ para todo $q in Q, alpha in Sigma$ 
+    - $delta_lambda (q, lambda) = {q_f}$ para todo $q in Q$ si $q in F$ (Esto debería definirlo así, o usar la clausura lambda?)
+
+    Queremos demostrar que $LenguajeDe(N) = LenguajeDe(E)$, para eso primero notamos que $deltaSombrero_N (q_0, w) = deltaSombrero_E (q_(0lambda), w)$ para toda cadena $w in SigmaMás$. Con esto en mente tenemos que (Separamos en casos):
+
+    - $lambda in LenguajeDe(N) sii delta(q_0, lambda) sect F eq.not emptyset sii {q_0} sect F eq.not emptyset implica delta_lambda (q_0, lambda) = {q_f} implica delta(q_0, lambda) sect F_lambda eq.not emptyset sii lambda in LenguajeDe(E)$
+
+    - $lambda in LenguajeDe(E) sii delta(q_0, lambda) sect F_lambda eq.not emptyset implica delta(q_0, lambda) sect F eq.not emptyset sii lambda in LenguajeDe(N)$
+
+    - $w in LenguajeDe(N) sii deltaSombrero_N (q_0, w) sect F eq.not emptyset implica delta_lambda (deltaSombrero_lambda (q_0, w), lambda) = {q_f} sii deltaSombrero_lambda (q_0, w) sect F_lambda eq.not emptyset sii w in LenguajeDe(E)$
+
+    - $w in LenguajeDe(E) sii deltaSombrero_lambda (q_0, w) sect F_lambda eq.not emptyset sii delta_lambda (deltaSombrero_lambda (q_0, w), lambda) = {q_f} implica deltaSombrero (q_0, w) sect F eq.not emptyset sii w in LenguajeDe(N)$
+    ]
+    ] \ 
   + Sea $Sigma$ un alfabeto con al menos dos símbolos, y sea a un símbolo de $Sigma$. Sea  $N = tupla$ un AFND, considerar el AFND-$lambda$ $E = angle.l Q, Sigma \\ {a}, delta_lambda, q_(0), F angle.r$ que se obtiene por reemplazar todas las transiciones por el símbolo a por trancisiones $lambda$. Es decir: 
 
       - Para todo $q in Q, x in Sigma : x eq.not a, delta(q, x) = delta_lambda (q, x)$
@@ -739,3 +1086,20 @@ Con esto queda demostrado que $LenguajeDe(M) = LenguajeDe(G)$. \
     Determinar cuál es el lenguaje aceptado por E
 
   + Es posible acotar superiormente cuántas trancisiones requiere la aceptación de una palabra en un AFND-$lambda$?
+
+    \ 
+
+    #rect[ \ #align(center)[#align(center)[
+      Noc (_xd_)
+      ] \ ]]
+  + Sea  $E = angle.l Q, Sigma, delta, q_(0), {q_f} angle.r$ un AFND-$lambda$ tal queno haya transiciones hacia $q_0$ ni desde $q_f$. Describir los lenguajes que se obtienen a partir de las siguientes modificaciones: 
+
+      a) Agregar una transición $lambda$ desde $q_f$ hacia $q_0$ \
+
+      b) Agregar una transición $lambda$ desde $q_0$ hacia cada estado alcanzables desde $q_0$ (notar que no es sólo aquellos directos) \
+
+      c) Agregar una transición $lambda$ hacia $q_F$ desde cada estado que tiene un camino  hacia $q_f$ \
+
+      d) El autómata obtenido haciendo b) y c) 
+    
+  + 

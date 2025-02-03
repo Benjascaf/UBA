@@ -855,22 +855,25 @@ De esto  tenemos que $(q, alpha beta) tack.r^* (p, beta) sii deltaSombrero(q, al
                 Como $|u v x| = 2 n $ y $1lt.eq |v| lt.eq n$ tenemos que $n lt.eq |u x| lt.eq 2 n - 1$, contradiciendo nuestra suposición que dicha cadena no existía.
             ]
 
-          ]
+          ]]
 
         == Propiedades de clausura de los lenguajes regulares\
          === Unión 
          #theorem[El conjunto de lenguajes regulares incluidos en $SigmaEstrella$  es cerrado respecto de la unión]
          
          #proof[
-          Sean $L_1$ y $L_2$ lenguajes regulares. Sea $M_1 = AF(Q_1, Sigma, delta_1, q_1, F_1)$ tal que $LenguajeDe(M_1) = L_1$ y $M_2 = AF(Q_2, Sigma, delta_2, q_2, F_2)$ tal que $LenguajeDe(M_2) = L_2$ y $Q_1 sect Q_2 eq emptyset$. Sea $M = AF(Q_1 union Q_2 union {q_0}, Sigma, delta, q_0, F_1 union F_2)$ tal que:
+          Sean $L_1$ y $L_2$ lenguajes regulares. Sea $M_1 = AF(Q_1, Sigma, delta_1, q_1, F_1)$ tal que $LenguajeDe(M_1) = L_1$ y $M_2 = AF(Q_2, Sigma, delta_2, q_2, F_2)$ tal que $LenguajeDe(M_2) = L_2$ y $Q_1 sect Q_2 eq emptyset $. 
+          definimos $M = AF(Q, Sigma, delta, q_0, F)$ tal que:
 
-          - $forall q_1 in Q_1, forall q_2 in Q_2, forall a in Sigma, delta((q_1, q_2), a) = (delta_1(q_1, a), delta_2(q_2, a))$
+          - $Q = Q_1 times Q_2$
+          - $q_0$ = $(q_1, q_2)$
+          - $delta((q, r), a) = (delta_1 (q, a), delta_2(r,a))$ para $q in Q_1, r in Q_2, a in Sigma$
 
-          - $F = {(f_1, f_2) : f_1 in F_1 or f_2 in F_2}$
+          - $F = {(p, q) : p in F_1 or q in F_2}$
 
-          tal que $LenguajeDe(M) = L$. \
+          con $LenguajeDe(M) = L_1 union L_2$. \
 
-          Para probar que $L = L_1 union L_2$, basta probar que: $x in LenguajeDe(M) sii x in LenguajeDe(M_1) or x in LenguajeDe(M_2)$.
+          Ahora queda demostrar la pertenencia
 
           #align(center)[
             $x in LenguajeDe(M) &sii delta((q_1_0, q_2_0), x) in F \
@@ -881,15 +884,470 @@ De esto  tenemos que $(q, alpha beta) tack.r^* (p, beta) sii deltaSombrero(q, al
 
 
          ]
+         (*Si no me equivoco, acá falta demostrar la equivalencia para $deltaSombrero$, si no no se puede asumir nada sobre la aplicación de la misma a cadenas. No debería ser difícil, pero si llego debería corregir esto*)
 
+         Una demostración alternativa es hacer uso de las expresiones regulares. Dados $r_1$ y $r_2$ expresiones regulares que denotan los lenguajes $L_1$ y $L_2$, respectivamente, podemos construir una expresión regular $r = r_1 | r_2$ que denota la unión de los lenguajes, por definición.
+
+        === Concatenación y clausura de Kleene
+        #theorem[El conjunto de lenguajes regulares incluidos en $SigmaEstrella$  es cerrado respecto de la concatenación y la clausura de Kleene]
+        (*La demo más aceptada es hacer uso nuevamente de expresiones regulares, ya que por definición trivializan la prueba, pero me gustaría demostrar también que los
+        autómatas que armamos son válidos, considerar agregarla / hacerla como ejercicio*)
+
+
+        === Complemento
+        #theorem[El conjunto de lenguajes regulares incluidos en $SigmaEstrella$  es cerrado respecto del complemento]
+
+        #proof[Sea L = $LenguajeDe(M)$ para algún AFD M = #tupla cuya función de transición $delta$ está completamente definida. 
+        Tenemos entonces que el autómata:
+          #align(center)[$M' = AF(Q, Sigma, delta, q_0, Q - F)$]
+        Como tenemos que ahora todas las cadenas que no eran aceptadas por M lo son, y viceversa, tenemos que $LenguajeDe(M') = SigmaEstrella - L = overline(L)$.
+          ]
+         === Intersección
+          #theorem[El conjunto de lenguajes regulares incluidos en $SigmaEstrella$  es cerrado respecto de la intersección]
+
+          #proof[Sea $L_1$ y $L_2$ lenguajes regulares. Sea $M_1 = AF(Q_1, Sigma, delta_1, q_0_1, F_1)$ tal que $LenguajeDe(M_1) = L_1$ y $M_2 = AF(Q_2, Sigma, delta_2, q_0_2, F_2)$ tal que $LenguajeDe(M_2) = L_2$. Definamos $M = AF(Q, Sigma, delta, q_0, F)$ tal que:
+
+          - $Q = Q_1 times Q_2$
+          - $q_0$ = $(q_0_1, q_0_2)$
+          - $delta((q, r), a) = (delta_1 (q, a), delta_2(r,a))$ para $q in Q_1, r in Q_2, a in Sigma$
+          - F = $F_1 times F_2$ = ${(p, q) : p in F_1 and q in F_2} $ =
+
+          Con una inducción sobre $|w|$ es fácil ver que $deltaSombrero((q,r), w) = (deltaSombrero_1(q,w), deltaSombrero_2(r,w))$. Con esto en cuenta, tenemos que:
+          #align(center)[$w in LenguajeDe(M) sii deltaSombrero((p, r), w) in F \ 
+          sii (deltaSombrero_1(p, w), deltaSombrero_2(r, w) in F_1 times F_2)) \ 
+          sii (deltaSombrero_1(p, w) in F_1) and (deltaSombrero_2(r, w) in F_2) \ 
+          sii w in L_1 and w in L_2$]
+          ] 
+
+          == Unión e Intersección finitos de lenguajes regulares 
+            #theorem[$forall n in NN,  union.big_(i=1)^n  L_i $ es regular] 
+
+            #theorem[$forall n in NN,  sect.big_(i=1)^n  L_i $ es regular]
+
+            #proof[Demostramos la unión por inducción sobre n, la intersección es similar: \
+
+            - Caso base: $n = 0$ \
+              $union.big_(i=1)^0  L_i = emptyset$, que sabemos es regular 
+
+            - Paso inductivo: \
+              Supongamos que $union.big_(i=1)^n  L_i$ es regular. Sea $L_{n + 1}$ un lenguaje regular.
+            
+             Entonces, por la propiedad de clausura de la unión, tenemos que $union.big_(i=1)^(n + 1)  L_i = union.big_(i=1)^n  L_i union L_{n + 1}$ es regular. 
+            ] 
+
+          #lema[Los lenguajes regulares no están clausurados por union infinita]
+
+          #proof[Sea $L_i = {a^i b^i}$, si lo estuvieran,  entonces  $union.big_(i=1)^oo  L_i$ sería regular, pero:\
+
+            #align(center)[ $union.big_(i=1)^oo  L_i$ =  $union.big_(i=1)^oo  {a^i b^i} = {a^k b^k : k in NN}$, que sabemos no es regular]
+          
+          ]
+
+          == Todo lenguaje finito es regular 
+          #theorem[Todo lenguaje finito es regular]
+          #proof[Sea L un lenguaje finito, con n cadenas ${w_1, w_2, ..., w_n}$. 
+            Para cada $1 lt.eq i lt.eq n$, sea $L_i = {w_i}$
+
+            Entonces $L = union.big_(i=1)^n L_i$, que sabemos es regular pues cada $L_i$ lo es
+          ]
+    == Problemas de decisibilidad de lenguajes regulares 
+    === Vacuidad 
+    #theorem[El problema de la vacuidad de un lenguaje regular es decidible]
+    #proof[suponiendo que la representación del lenguaje está dada mediante un AFD (notar que siempre se puede convertir de una representación a otra, y en esta materia estamos ignorando complejidad, porque el plan nuevo de la carrera es *muy bueno*)
+
+          - Se determina el conjunto de estados alcanzables desde el estado inicial 
+          - Si ninguno de los estados alcanzables es final, entonces el lenguaje es vacío] 
+    === Pertenencia 
+    #theorem[El problema de la pertenencia de un lenguaje regular es decidible]
+    #proof[Suponiendo que la representación del lenguaje está dada mediante un AFD, se puede determinar si una cadena pertenece simplemente determinando si la misma es aceptada por el autómata]
+
+    === Finititud 
+    #theorem[El problema de la finitud de un lenguaje regular es decidible]
+    #proof[Anteriormente demostramos cual era la condición suficiente y necesaria para que un lenguaje fuese infinito]
+
+    === Equivalencia 
+    #theorem[El problema de la equivalencia de dos lenguajes regulares es decidible]
+    #proof[$L_1 Delta L_2 = (L_1 sect overline(L_2)) union (overline(L_1) sect L_2) = emptyset sii L_1 eq L_2$]
+    (*El libro propone una demostración más constructiva y eficiente, introduciendo el concepto de equivalencia de estados*)
+
+  = Gramáticas Libres de Contexto
+    #definition[Recordemos que, llamamos a una gramática $G = Gramática(V_N, V_T, P, S)$ libre de contexto si las producciones P son de la forma:
+    #align(center)[
+      $A -> alpha$ con $A in V_N$ y $alpha in (V_N union V_T)*$
+    ]
+    ]
+
+    == Derivación 
+      Si $alpha, beta, gamma_1, gamma_2 in (V_N union V_T)^*$ y $alpha -> beta in P$ entonces:
+      #align(center)[
+        $ gamma_1 alpha gamma_2 => gamma_1 beta gamma_2$
+      ]
+
+      La relación $=>$ es un subconjunto de $(V_N union V_T)^* times (V_N union V_T)^*$ y significa derivar en un solo paso
+
+      Las relaciones $=>^*$ y $=>^+$ son las clausuras reflexiva y transitiva de $=>$, respectivamente
+
+      Si $alpha in (V_N union V_T)^* y #h(.5em) S =>^* alpha$ decimos que la misma es una forma sentencial de G.  
+
+    == Inferencia 
+    #definition[Una manera alternativa de determinar la pertenencia de una cadena es partir desde el cuerpo de las producciones, identificando las cadenas que ya sabemos pertenecen al lenguaje
+    , y concatenandolas formando así cadenas más complejas]
+    
+    == Lenguaje de una Gramática
+    #definition[El lenguaje de una gramática G, denotado $LenguajeDe(G)$ es el conjunto de todas las cadenas que pueden ser derivadas desde el símbolo inicial S de G. Es decir:
+      #align(center)[$LenguajeDe(G) = {w in V_T^*: S =>^+ w}$]
     ]
 
 
+    #let arbol(A) = $cal(T)(A)$
+    == árbol de derivación 
+    #definition[Un árbol de derivación para una gramática G es un árbol tal que: 
+      - Sus hojas están etiquetadas con símbolos de $V_T$, $V_N$ o $lambda$, caso en el cual el mismo debe ser el único hijo de su padre.
+      - Sus nodos internos están etiquetados con símbolos de $V_N$.
+      - La raíz está etiquetada con el símbolo inicial S
+      - Si un nodo interno está etiquetado con A y sus hijos están etiquetados con $X_1, X_2, ..., X_n$ entonces $A -> X_1 X_2 ... X_n$ es una producción de G
+
+      El árbol de derivación correspondiente a una variable A lo notaremos con $arbol(A)$
+    ]
+
+
+    #definition[Llamamos producto (yield) de un árbol de derivación a la cadena que se obtiene al concatenar las etiquetas de las hojas de izquierda a derecha. En particular, 
+    tenemos que aquellos árboles que cumplen que: \ 
+    
+    - Todas las hojas están etiquetadas con símbolos de $V_T$ o con $lambda$
+
+    - La raíz está etiquetada con el símbolo inicial S
+
+    Son los árboles cuyo producto son las cadenas en el lenguaje de la gramática correspondiente  
+    ]
+
+    #definition[LLamamos camino de X en un árbol $arbol(A)$ a la cadena $A, X_1,..., X_k, X$ tal que:
+    #align(center)[$A => .....X_1.....=>.....X_2.....=> .... => ......X_k.....=> X$]
+    ]
+
+    #definition[Llamamos altura de $arbol(A)$ a: 
+    #align(center)[${max {|a x| : x "es una hoja de " arbol(A) "y " A a x "es un camino de x"}}$]
+    ]
+
+    == Equivalencia inferencia, árbol Derivación y Derivaciones 
+    
+    #theorem[Sea G una GLC. Si el procedimiento de inferencia recursivo determina que una cadena $w$ con sólo terminales esta en el lenguaje de una gramática definido por una variable, entoces hay una árbol de derivación
+    con raíz en esa variable que produce $w$]
+    #proof[Por inducción en la cantidad de pasos utilizados para inferir que $w$ esta en el lenguaje de la variable A: 
+    
+    - Caso base: Un sólo paso.
+    En este caso, tenemos que $A -> w$ debe ser una producción de la gramática, y por lo tanto, el árbol de derivación es simplemente un nodo con raíz en A y hojas etiquetadas con los símbolos de w. 
+    #align(center)[#syntree(
+  child-spacing: 3em, // default 1em
+  layer-spacing: 4em, // default 2.3em
+  "[^A <====== w =======>]"
+)]
+    - Paso inductivo: 
+    Supongamos que el hecho de que $w$ esté en el lenguaje es inferido luego de n + 1 pasos, y que el teorema 
+    vale para todas las cadenas $x$ y variables B tal que su pertenencia fue determinada con n o menos pasos. Consideremos el último paso de 
+    la inferencia utilizada para determinar que $w$ está en el lenguaje de A. Por definición, la inferencia usa alguna producción de A, 
+    supongamos que es $A -> X_1 X_2 ... X_k$, donde cada $X_i$ es o bien una variable o un terminal. Podemos entonces tomar $w = w_1...w_k$como: 
+    
+    - Si $X_i$ es un terminal, entonces $X_i = w_i$, es decir, $w_i$ solo consiste de este terminal en la producción 
+    - Si $X_i$ es una variable, entonces $w_i$ es una cadena que fue inferida con n pasos que está en el lenguaje de esa variable, y por hipótesis inductiva, sabemos que hay un árbol de derivación con raíz en $X_i$ que produce $w_i$
+
+     Con esto, podemos armar el siguiente árbol de derivación, notar que en el primer caso los subárboles correspondiientes son triviales de un solo nodo: 
+
+\ \
+
+      #align(center)[#syntree(
+  child-spacing: 3em, // default 1em
+  layer-spacing: 3em, // default 2.3em
+  "[A [^X1 [w1]] [^X2 [w2]] [...] [^Xk [wk]]]"
+)]
+  ]
+
+#theorem[Sea G una GLC. Si hay un árbol de derivación con raíz en una variable A que produce una cadena $w$, tal que $w in V_T^*$. Entonces hay una derivación a izquierda $A =>_L^* w$ en la gramática]
+#proof[Por inducción en la altura del árbol de derivación:
+
+- Caso base: Altura 1
+
+  En este caso, tenemos que el árbol de derivación es simplemente un nodo con raíz en A y hojas etiquetadas con los símbolos de w. Como se trata de un arbol de derivación, $A -> w$ debe ser una producción, por lo que la derivación es simplemente $A =>_L w$
+
+  #align(center)[#syntree(
+  child-spacing: 3em, // default 1em
+  layer-spacing: 4em, // default 2.3em
+  "[^A <====== w =======>]"
+)]
+
+- Paso inductivo: 
+
+  Supongamos que el árbol de derivación tiene altura n + 1. Entonces, la raíz del árbol de derivación es A, y tiene hijos $X_1, X_2, ..., X_k$:
+    
+    - Si $X_i$ es un terminal, definimos $w_i$ como la cadena que consiste solo de $X_i$, es decir $w_i = X_i$
+    - Si $X_i$ es una variable, entonces debe ser la raíz para algún subárbol con una producción de sólo terminales (pues si no no se cumpliría el precedente), a la que identificamos como $w_i$.
+      Notar que por hipótesis inductiva, sabemos que hay una derivación a izquierda $X_i =>_L^* w_i$. 
+
+  Ahora podemos armar la derivación a izquierda $A =>_L^* w$ de la siguiente manera:  
+
+  #align(center)[
+    $A =>_L X_1 X_2 ... X_k =>_L^* w_1 X_2 ... X_k =>_L^* w_1 w_2 ... X_k =>_L^* w_1 w_2 ... w_k = w$
+  ]
+]
+
+#theorem[Sea G una GLC. Si hay una derivación $A =>^* w$ en la gramática, entonces el procedimiento de inferencia recursivo determina que $w$ está en el lenguaje de la variable A]
+#proof[Por inducción en la cantidad de pasos de la derivación:
+
+- Caso base: Un solo paso
+
+  En este caso, tenemos que $A -> w$ debe ser una producción de la gramática, y por lo tanto, el procedimiento de inferencia recursivo determina que $w$ está en el lenguaje de A de manera inmediata.
+
+- Paso inductivo:
+  
+  Supongamos que la derivación tiene n + 1 pasos, y que la hipótesis vale para cualquier derivación con menos de n pasos. Escribiendo la primera derivación de la forma $A => X_1 X_2 ... X_k$, separamos a $w = w_1...w_k$ tal que:
+    - Si $X_i$ es un terminal, entonces $X_i = w_i$, es decir, $w_i$ solo consiste de este terminal en la producción
+    - Si $X_i$ es una variable, entonces $X_i => w_i$. Como sabemos que $A =>^* w$ no es parte de esta derivación, (pues la misma tiene más pasos) tenemos que la misma tiene menos de n pasos, por lo que, por H.I sabemos que se puede inferir que $w_i$ está en $X_i$
+  
+  Por lo tanto, tenemos una producción de la forma $A -> X_1 X_2 ... X_k$, con cada $w_i$ quivalente a $X_i$ o en el lenguaje del mismo,  por lo tanto, el procedimiento de inferencia recursivo determina en el siguiente paso que $w$ está en el lenguaje de A
 
 
 
+]
+
+== Gramáticas Ambiguas
+#definition[Una gramática es ambigua si existe al menos una cadena $w in V_T*$ para la cual haya al menos dos árboles de derivación, ambos con raíz S y que produzcan $w$]
+
+#theorem[Para toda gramática G y cadena $w in T^*$, $w$ tiene dos árboles de derivación distintos $sii w$ tiene dos derivaciones a izquierda distintas a partir de S]
+
+#proof[]
+
+#definition[Un Lenguaje libre de contexto es inherentemente ambiguo  si no existe una gramática no ambigua que genere el  lenguaje]
 
 
+#let apd = $angle.l Q, Sigma, Gamma, delta, q_0, Z_0, F angle.r$
+= Autómatas de Pila
+#definition[Un autómata de pila es una tupla $M = apd$ donde:
+\
+  - Q es un conjunto finito de estados
+  - $Sigma$ es un alfabeto finito de entrada
+  - $Gamma$ es un alfabeto finito de la pila
+  - $q_0 in Q$ es el estado inicial
+  - $Z_0 in Gamma$ es la configuración inicial de la pila
+  - $F subset.eq Q$ es el conjunto de estados finales
+  - $delta: Q times (Sigma union {lambda}) times  Gamma -> P(Q times Gamma^*)$ es la función de transición
+
+La interpretación de $delta(q, x, Z) = {(p_1, gamma_1), ..., (p_n, gamma_n)}$ es como sigue:
+
+Cuando el estado del autómata es q, el símbolo que la cabeza lectora está
+inspeccionando en ese momento es x, y en el tope de la pila hay Z, se realizan las sigueintes acciones: 
+
+- Si $x in Sigma$ ($eq.not lambda$), la cabeza lectora avanza una posición para inspeccionar el siguiente símbolo 
+- Se elimina el símbolo Z del tope de la pila
+- Se selecciona un par $(p_i, gamma_i)$ entre los existentes
+- Se apila la cadena $gamma_i = c_1 c_2...c_k$, con $c_i in Gamma$ en la pila del autómata, con el símbolo $c_1$ quedando en el tope 
+- Se cambia el control del autómata al estado $p_i$
+]
+
+== Configuración de un AP
+#definition[Una configuración instánea de un AP es una terna $(q, w, gamma)$ donde:
+
+- q es el estado actual del autómata
+- $w$ es la cadena de entrada que queda por leer
+- $gamma$ es el contenido de la pila
+La configuración inicial de un AP para una cadena $w_0$ es $(q_0, w_0, Z_0)$
+]
+
+#definition[Representamos al cambio entre configuraciones instantáneas de un autómata tal que, 
+para todo $x in Sigma, w in SigmaEstrella, Z in Gamma, gamma, pi in Gamma^*, q, p in Q$:
+
+#align(center)[
+ -  $(q, x w, Z pi) tack.r (p, w, gamma pi) "si" (p, gamma) in delta(q, x, Z)$
+ - $(q, w, Z pi) tack.r (p, w, gamma pi) "si" (p, gamma) in delta(q, lambda, Z)$
+]
+]
+
+#theorem[Información que el AP no utiliza no afecta su comportamient. Formalmente, sea $P = apd$ un AP, y $(q, x, alpha) tack.r^* (p, v, beta)$, entonces, para toda cadena $w in Sigma^*$ y $gamma in Gamma^*$:
+#align(center)[
+  $(q, x w, alpha gamma) tack.r^* (p, v w, beta gamma)$]
+
+ ]
+
+#proof[Se trata de una simple inducción sobre la cantidad de pasos en los cambios de configuración]
+
+== Lenguaje de un AP
+#definition[El lenguaje de un AP P, denotado $LenguajeDe(P)$ es el conjunto de todas las cadenas que consume y a la vez alcanzan un estado final, es decir:
+#align(center)[
+  $LenguajeDe(P) = {w in SigmaEstrella: exists (p in F, gamma in Gamma^*) #h(.5em) (q_0, w, Z_0) tack.r^* (p, lambda, gamma)}$
+]
+]
+
+#definition[El lenguaje reconocido por P por pila vacía es: 
+#align(center)[
+  $LenguajeDe_lambda(P) = {w in SigmaEstrella: exists (p in Q) #h(.5em) (q_0, w, Z_0) tack.r^* (p, lambda, lambda)}$
+]
+]
+
+== Equivalencia $LenguajeDe(P)$ y $LenguajeDe_lambda (P)$
+
+#theorem[Para todo AP $P_F = angle.l Q_F, Sigma, Gamma_F, delta_F, q_0_F, Z_0, F_F angle.r$, existe un  AP $P_lambda$ tal que: 
+
+#align(center)[
+  $LenguajeDe(P_F) = LenguajeDe_lambda (P_lambda)$]
+]
+
+#proof[Definimos $P_lambda$ = $angle.l Q_F union {q_0_lambda, q_lambda}, Sigma, Gamma union {X_0}, delta_lambda, q_0_lambda, emptyset angle.r$ tal que:
+
++ $delta_lambda (q_0_lambda, w, X_0) = {(q_0_F, Z_0 X_0)}$
+
++ $forall (q in Q_F, x in Sigma union {lambda}, Z in Gamma_F), delta_lambda (q, x, Z) = delta_F (q, x, Z)$ 
+
++ $forall (q in F_F, Z in Gamma_F union {X_0}) , (q_lambda, lambda) in delta_lambda (q, lambda, Z)$
+
++ $forall (Z in Gamma_F union {X_0}), (q_lambda, lambda) in delta_lambda (q_lambda, lambda, Z)$ 
+\ 
+
+#align(center)[
+      #cetz.canvas({
+        import cetz.draw: circle, line, content
+        import draw: state, transition
+
+        circle((3,0), name: "PF", radius: (6, 3), stroke: black, fill: auto)
+        content((rel: (-2.5, 1.5), to: "PF"), text($P_F$))
+
+        circle((5,0), name: "FF", radius: (3,2), stroke: black, fill: auto)
+        content((rel: (-1, 1.5), to: "FF"), text($F_F$))
+
+        content((rel: (-6, 3), to: "PF"), text($P_lambda$))
+
+        state((-2.1, 0), "q1", label: $q_0_F$)
+        state((5, -.7), "f1", label: $$)
+        state((6, .9), "f2", label: $$)
+
+        state(( -6, 0), "q0", label: $q_0_lambda$, initial: "")
+        state((11.5, 0), "f0", label: $q_lambda$)
+
+        transition("f1", "f0")
+        transition("f2", "f0", label: $lambda, Z | lambda$)
+        transition("f0", "f0", label: $lambda, X_0 | Z_0 X_0$, curve: 0.6)
+        transition("q0", "q1", label: $lambda, X_0 | Z_0 X_0$, curve: 0.3)
+      })
+    ] 
+
+Queremos ahora ver que $w in LenguajeDe(P_F) sii w in LenguajeDe_lambda (P_lambda)$:
+
+- $implica$) Si $w in LenguajeDe(P_F)$ entonces $(q_0_F, w, Z_0) tack.r^*_P_F (q, lambda, gamma)$, con $q in F_F, gamma in Gamma^*$
+Por la regla 1 de $delta_lambda, delta_lambda (q_0_lambda, lambda, X_0) = {(q_0_f, Z_0 X_0)}$, por lo que: 
+#align(center)[$q_0_lambda, w, X_0 tack.r_P_lambda (q_0_F, w, Z_0 X_0)$
+
+ ]
+
+Por la regla 2 de $delta_lambda$, tenemos que todas las transiciones de $P_F$ están en $P_lambda$ (lo \"simula\"), por lo que:
+#align(center)[$(q_0_F, w, Z_0) tack.r^*_P_lambda (q, lambda, gamma)$]
+Entonces: 
+#align(center)[$(q_0_lambda, w, X_0) tack.r_P_lambda (q_0_F, w, Z_0 X_0) tack.r^*_P_lambda (q, lambda, gamma X_0)$]
+
+Nuevamente por las regals 3 y 4 $delta_lambda$, para todo estado final q $in F_F$ y $Z in Gamma union {X_0}$ tenemos que una vez que se alcanza un estado final en $P_F$, se puede llegar a $P_lambda$ con la pila vacía, por lo que: 
+
+#align(center)[$(q, lambda, gamma X_0) tack.r_P_lambda (q_lambda, lambda, gamma X_0)$]
+
+Y que, una vez en $q_lambda$, se puede llegar a la pila vacía sin importar el tope de la pila, por lo que: 
+#align(center)[$(q_lambda, lambda, gamma) tack.r^*_P_lambda (q_lambda, lambda, lambda)$]
+
+Juntando todo, tenemos:
+#align(center)[
+  $(q_0_lambda, w, X_0) tack.r_P_lambda (q_0_F, w, Z_0 X_0) tack.r^*_P_lambda (q, lambda, gamma X_0) tack.r_P_lambda (q_lambda, lambda, gamma X_0) tack.r^*_P_lambda (q_lambda, lambda, lambda)$]
+
+Por lo que si $w in LenguajeDe(P_F), $ entonces $w in LenguajeDe_lambda (P_lambda)$
+
+- $implicaVuelta$) Tenemos que $w in LenguajeDe_lambda (P_lambda)$. Sabemos por la definición de $delta_lambda$ que la única manera de que $P_lambda$ vacíe su pila es mediante el estado $p_lambda$ (pues es el único estado que puede identificar $X_0$), además, sabemos que la única manera en la que $P_lambda$ alcance este estado, es si el autómata simulado alcanza un estado final de $P_F$. Finalmente, sabemos que el primer movimiento del autómata es siempre saltar al autómata simulado, por lo que tenemos:
+
+#align(center)[
+  $(q_0_lambda, w, X_0) tack.r_P_lambda underbrace((q_0_F, w, Z_0 X_0) tack.r^*_P_lambda (q, lambda, gamma X_0), A) tack.r_P_lambda (q_lambda, lambda, gamma X_0) tack.r^*_P_lambda (q_lambda, lambda, lambda)$]
+
+  Pero la tranisción en A necesariamente implica que (pues la misma no hace uso de $X_0$):
+  #align(center)[
+    $(q_0_F, w, Z_0) tack.r^*_P_F (q, lambda, gamma)$
+  ] 
+  Por lo que si $w in LenguajeDe_lambda (P_lambda), $ entonces $w in LenguajeDe(P_F)$
+]
+
+#theorem[Para todo AP $P_lambda = angle.l Q_lambda, Sigma, Gamma_lambda, delta_lambda, q_0_lambda, X_0, emptyset angle.r$ , existe un AP $P_F$ tal que:
+#align(center)[
+  $LenguajeDe_lambda (P_lambda) = LenguajeDe(P_F)$]
+]
+
+#proof[Definimos $P_F$ = $angle.l Q_lambda union {q_0_F, q_f}, Sigma, Gamma union {X_0}, delta_F, q_0_lambda, F_lambda angle.r$ tal que:
+
++ $delta(q_0_F, lambda, Z_0) = {(q_0_lambda, X_0 Z_0)}
+$
+
++ $forall( q in Q_lambda, x in Sigma union {lambda}, Z in Gamma_lambda), delta_F(q, x, Z) = delta_lambda (q, x, Z)$
+
++ $forall q in Q_lambda, (q_f, lambda) in delta_F(q, lambda, Z_0 )$
+
+Ahora tenemos que demostrar que $w in LenguajeDe(P_F) sii w in LenguajeDe_lambda (P_lambda)$:
+
+- $implicaVuelta)$ Si $w in LenguajeDe_lambda (P_lambda)$ entonces tenemos que $(q_0_lambda, w, X_0) tack.r^*_P_lambda (q, lambda, lambda)$
+
+Por definición de delta, tenemos que
+  #align(center)[$(q_0_F, w, Z_0 ) tack.r_P_F (q_0_lambda, w, X_0  Z_0) tack.r^*_P_F (q,lambda, lambda) tack.r_P_F (q_F, lambda, lambda)$]
+Y por lo tanto $w in LenguajeDe(P_F)$
+]
+
+- $implica)$ Si $w in LenguajeDe(P_F)$, tenemos que: 
+  #align(center)[$(q_0_F, w, Z_0) tack.r_P_F (q_0_lambda, w, X_0 Z_0) tack.r^*_P_F (p, lambda, Z_0) tack.r_P_F (q_f, lambda, lambda)$]
+
+  Pero por definición de $P_F$:
+
+  #align(center)[$(q_0_lambda, w, X_0 Z_0) tack.r_P_F (p, lambda, Z_0) sii (q_0_lambda, w, X_0) tack.r_P_lambda (p, lambda, lambda)$]
+
+  Luego, tenemos que $(q_0_lambda, w, X_0) tack.r_P_lambda (p, lambda, lambda)$, por lo que $w in LenguajeDe_lambda (P_lambda)$
+
+== Equivalencia GLCs y APDs 
+
+  #theorem[Para toda GLC G, existe un AP M tal que:
+    
+    #align(center)[
+      $LenguajeDe(G) = LenguajeDe_lambda (M)$]
+
+    ]
+
+  #proof[Sea G = #Gramática($V_N$, $V_T$, $P$, $S$) una GLC ,  definimos M = $angle.l {q}, V_T, V_T union V_N, delta, q, S, emptyset angle.r$ tal que: 
+
+    - $delta: Q times (V_T union lambda) times (V_N union V_T) -> PartesDe(Q times (V_T union V_N)^*)$
+      
+      - Si $A -> alpha in P$, entonces $delta(q, lambda, A) in.rev {(q, alpha)}$ (Para toda producción en P, M lo simula desapilando la variable correspondiente y pusheando el cuerpo de la producción)
+      
+      - Para todo $x in V_T$, $delta(q, x, x) eq {(q, lambda)}$ (Si se tiene que el tope de la pila es un terminal, se desapila y se avanza si es igualal símbolo que la cabeza lectora está leyendo)
+  Queremoe ver que $w in LenguajeDe(G) sii w in LenguajeDe_lambda (M)$:
+
+  #lema[$forall(A in V_N, w in V_T*) A =>^+ w "sii" (q, w, A) tack.r^*_M (q, lambda, lambda)$]
+
+  Primero demostramos este lema por inducción sobre m, la cantidad de pasos en la derivación:
+
+  - Caso base: m = 1
+
+    En este caso, tenemos que $A =>^1 w$ para $w = x_1 x_2 ... x_k$. Notar que si esta es una derivación posible para $w$, entonces necesariamente tiene que haber una producción $A -> x_1 x_2 ... x_k in P$, luego,  por la primer regla de $delta$, seguida por la aplicación de la segunda (que nos permite eliminar terminales del tope siempre que matcheen con la cadena), tenemos: 
+    #align(center)[
+      $(q,w, A) tack.r_M (q,x_1 x_2 ... x_k, x_1 x_2 ... x_k) tack.r^k_M (q, lambda, lambda)$
+    ]
+
+  - Paso inductivo:
+
+    Por H.I, tenemos que, para todo $j lt m, A =>^j w "sii" (q, w, A) tack.r^j_M (q, lambda, lambda)$
+
+    Sea $w = w_1...w_k$, por definición de derivación, tenemos que $A =>^m w "sii" A-> X_1 X_2... X_k$ es una producción de la gramática, y que $X_1 =>^(m_1) w_1, X_2 =>^(m_2) w_2, ..., X_k =>^(m_k) w_k$, para $m_i lt m$.
+
+    Por otro lado, por def. de M tenemos que $A -> X_1 ... X_k in P$ sii $(q, w, A) tack.r_M (q, w, X_1...X_k)$
+
+    Si $X_i in V_N, " entonces por H.I " (q, w_i, X_i) tack.r^*_M (q, lambda, lambda)$
+    
+    Si $X_i in V_T, X_i = w_i " y entonces por la segunda regla de " delta, (q, w_i, X_i) tack.r_M (q, lambda, lambda)$
+
+
+    Juntando todo: 
+    #align(center)[
+      $(q, w, A) tack.r_M (q, w_1...w_k, X_1...X_k) tack.r^*_M (q, lambda, lambda)$
+    ]
+
+    \ 
+    Volviendo al teorema, el lema nos dice que $A =>^+ w "sii" (q, w, A) tack.r^*_M (q, lambda, lambda)$, luego, tomando \ S = A obtenemos la prueba del teorema
+  ]
 
   = Ejercicios (Después debería pasarlo a otro lado)
   + Demostra que $deltaSombrero(q, x y) = deltaSombrero(deltaSombrero(q, x), y)$ para cualquier estado q y cadenas x e y. *Pista*: hacer inducción sobre |y| \
@@ -1102,4 +1560,87 @@ De esto  tenemos que $(q, alpha beta) tack.r^* (p, beta) sii deltaSombrero(q, al
 
       d) El autómata obtenido haciendo b) y c) 
     
-  + 
+  + Demostrar que los lenguajes regulares son cerrados respecto de la concatenación y la clausura de Kleene mediante la construcción de un autómata.
+
+  + Demostrar que los lenguajes regulares son cerrados respecto de la diferencia de conjuntos.
+
+  + Demosstrar que los lenguajes regulares son cerrados respecto al reverso del lenguaje, donde el reverso está definido como el lenguaje formado por el reverso de todas sus cadenas. 
+
+  + Idem para homomorfismos y sus inversos (?
+
+  + Sea L un lenguaje regular, y $a$ un símbolo, llamamos L/$a$ al cociente de L y a al conjunto de cadenas $w$ tales que $w a in L$. Por ejemplo, si L = {a, aab, baa} entonces L/a = {$lambda$, ba}. Demostrar que si L es un lenguaje regular, entonces L/a también.
+
+  + De manera similar, probar que a \\ L es un lenguaje regular, donde a \\ L es el conjunto de cadenas $w$ talesque a$w in L$
+
+  + Demostrar que los lenguajes regulares son cerrados respecto de las siguientes operaciones:
+
+    a) $min(L) = {w | w in L$ y no existe $alpha$ tal que $alpha  w in L$}
+
+    b) $max(L) = {w | w in L$ y no existe $alpha eq.not lambda$ tal que $w alpha in L$}
+
+    c) init(L) = ${w | "Para algún " x, w x in L}$
+
+  + La mayoría de los ejs de la sección 4.2 (Me dió fiaca seguir copiando xd) 
+
+  + Sea L un lenguaje regular, y sea n la constante del Lema de Pumping para L. Determinar veracidad y demostrar: 
+
+    a) Para cada cadena z en L, con $|z| gt.eq n$, la descomposición de $z$ en $u v w$, con $|v| gt.eq 1$ y $|u v| lt.eq n$, es única. 
+
+    b) Cada cadena $z$ en L, con $|z| gt.eq n$, es de la forma $u v^i w$ para algún $u, v, w$ con $|v| gt.eq 1$ y $|u v| lt.eq n$ y algún i 
+
+    c) Hay lenguajes no regulares que satisfacen la condición afirmada por el Lema de Pumping 
+
+    d) Sean $L_1, L_2$ lenguajes sobre el alfabeto $Sigma$ tal que $L_1 union L_2$ es un lenguaje regular.
+    Entonces $L_1 $ y $L_2$ son regulares.
+
+  + Sea $cal(C)$ el mínimo conjunto que contiene todos los lenguajes finitos, y está cerrado por unión finita, intersección, complemento, y concatenación ¿Cuál es la relación entre $cal(C)$ y el conjunto de todos los lenguajes regulares? 
+  + Dar un algoritmo de desición que determine si el lenguaje aceptado por un autómata finito es el conjunto de todas las cadenas del alfabeto 
+  + Dar un algoritmo de decisión que determine si el lenguaje aceptado por un autómata finito es cofinito 
+  + Demostrar que todo lenguaje regular es libre de contexto. *Pista*: construir una gramática mediante inducción en la cantidad de operadores de una expresión regular 
+  + Una GLC es linear a derecha si el cuerpo de cada producción  tiene a lo sumo una variable, y la misma aparece más a la derecha. Es decir, todas las producciones son de la forma $A -> w B$ o $A -> w$.
+    
+    a) demostrar que toda GLC lineal a derecha genera un lenguaje regular. *Pista*: construir un autómata finito $lambda$ que simule la derivación más a izquierda de la gramática, con sus estados representando el símbolo no terminal de la forma sentencial actual.
+
+    b) Demostrar que todo lenguaje regular tiene una GLC lineal a derecha. *Pista*: Empezar un AFD y hacer que las variables de la gramática representen estados
+  
+  + Considerar la gramática G definida por las producciones: 
+    #align(center)[
+      $S -> a S | S b | a | b$
+    ]
+    a) Demostrar por inducción sobre la longitud de la cadena que ninguna cadena generada por G tiene $b a$ como subcadena.
+
+    b) Identificar $LenguajeDe(G)$
+
+  + Sea G la gramática con producciones: 
+    #align(center)[
+      $S -> a S b S | b S a S | lambda$
+    ]
+
+    Demosstrar que $LenguajeDe(G)$ es es conjunto de cadenas con una misma cantidad de $a$es que de $b$s
+
+  + Supongamos que G es una GLC sin producciones que tengan a $lambda$ del lado derecho. Si $w$ está en el lenguaje de G, |$w| eq n$ y $S =>^m w$, demostrar que $w$ tiene un arbol de derivación con n + m nodos. 
+
+  + Supongamos lo mismo que en el ej anterior, pero ahora puede haber producciones con $lambda$ en la derecha. Demostrar que un árbol de derivación para $w$ puede tener a lo sumo $n + 2m - 1$ nodos.
+
+  + Demostrar que si $X_1 X_2...X_k =>^* a$ entonces todos los símbolos que provienen de derivar $X_i$ están a la izquierda de todos los que provienen de derivar $X_j$, si $i lt j$. *Pista*: Usar inducción sobre la cantidad de pasos en la derivación
+
+
+  + Indicar veracidad:
+    - Si $ P = apd$ es un autómata de pila entonces cada cadena $w in LenguajeDe_lambda (P)$ es reconocida por P en a lo sumo $|w| * \#Q * \#Gamma$ transiciones, es decir: 
+    #align(center)[
+      Sea $n lt.eq |w| * \# Q * \# Gamma$, entonces existe $p in Q$ tal que $(q_0, w, Z_0) tack.r^n (p, lambda, lambda)$
+    ]
+
+  + Dado un autómata finito $M = AF(Q, Sigma, delta, q_0, F)$, dar un autómata de pila $M' = AP(Q', Sigma, Gamma', delta', q_0', Z'_0, emptyset)$ tal que $LenguajeDe(M) = LenguajeDe_(lambda)(M')$. \
+
+  + Consideremos la demostración del teorema que afirma que para cada autómata $M = AP(Q, Sigma, Gamma, delta, q_0, Z_0, F)$ existe un autómata $M'$ tal que $LenguajeDe(M) = LenguajeDe_(lambda)(M')$. \ ¿Si $M$ es determinístico, entonces el autómata $M'$ construido en la demostración también lo es? \
+
+  + Consideremos la demostración del teorema que afirma que dado $M' = AP(Q', Sigma, Gamma', delta', q_0', X_0, emptyset)$ existe un autómata $M$ tal que $LenguajeDe_(lambda)(M') = LenguajeDe(M)$. \ ¿Si $M'$ es determinístico, entonces el autómata $M$ construido en la demostración también lo es? \
+
+  + Demostrar que si P es un APDm entonces existe un APD $P_2$ con solo dos símbolos de pila (es decir $|Gamma_2| = 2$) tal que $LenguajeDe_lambda (P) = LenguajeDe_lambda (P_2)$. *Pista*: Considerar una codificación binaria para la pila 
+
+  + Un APD está restringido si en toda transición puede incrementar la altura de la pila con a lo sumo un símbolo, es decir, para toda transición $delta(q, w, Z)$ que contiene algún $(p, gamma)$, debe ocurrir que  \ $|gamma| lt.eq 2$. Demostrar que si P es un APD, entonces existe un APD restringido $P_2$ tal que $LenguajeDe (P) = LenguajeDe (P_2)$
+
+
+
+

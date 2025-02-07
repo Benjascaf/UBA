@@ -1112,7 +1112,7 @@ De esto  tenemos que $(q, alpha beta) tack.r^* (p, beta) sii deltaSombrero(q, al
 == Gramáticas Ambiguas
 #definition[Una gramática es ambigua si existe al menos una cadena $w in V_T*$ para la cual haya al menos dos árboles de derivación, ambos con raíz S y que produzcan $w$]
 
-#theorem[Para toda gramática G y cadena $w in T^*$, $w$ tiene dos árboles de derivación distintos $sii w$ tiene dos derivaciones a izquierda distintas a partir de S]
+#theorem[Para toda gramática G y cadena $w in T^*$, $w$ tiene dos árboles de derivación distintos $sii w$ tiene dos derivaciones a izquierda distintas a partir de S] <unambiguous>
 
 #proof[]
 
@@ -1349,6 +1349,664 @@ Y por lo tanto $w in LenguajeDe(P_F)$
     Volviendo al teorema, el lema nos dice que $A =>^+ w "sii" (q, w, A) tack.r^*_M (q, lambda, lambda)$, luego, tomando \ S = A obtenemos la prueba del teorema
   ]
 
+  #theorem[Si M es un APD, entonces existe una GLC G tal que:
+    
+    #align(center)[
+      $LenguajeDe_lambda (M) = LenguajeDe(G)$]
+
+    ] <apglc>
+
+  #proof[Sea M = $angle.l Q, Sigma, Gamma, delta, q_0, Z_0, emptyset angle.r$ un APD, definimos G = #Gramática($V_N$, $V_T$, $P$, $S$) tal que:
+  
+  - $V_N  = {[q Z p]: q, p in Q, Z in Gamma} union {S}, V_T = Sigma, $ y P dado por: 
+    
+   
+    - $S -> [q_0 Z_0 q]$, para cada p en Q
+ 
+    - $[q Z q_1] -> x$ sii $(q_1, lambda) in delta(q, x, Z)$
+ 
+    - $[q Z q_1] -> lambda$ sii $(q_1, 
+    lambda) in delta(q, lambda, Z)$
+    - Para cada $q, q_1, ... q_m+1 in Q, x in Sigma " y " Z, Y_1...Y_m in Gamma$:
+    
+      - $[q Z q_(m+1)] -> x [q_1 Y_1 q_2] ... [q_m Y_m q_(m+1)]$ en P sii $(q_1, Y_1...Y_m) in delta(q, x, Z)$
+    
+      - $[q Z q_(m+1)] -> [q_1 Y_1 q_2] ... [q_m Y_m q_(m+1)]$ en P sii $(q_1, Y_1...Y_m) in delta(q, lambda, Z)$
+  
+\
+ 
+  Antes de coninuar, primero probamos el siguiente lema:
+
+  #lema[ 
+    Para todo $q, p in Sigma, Z in Gamma $:
+    #align(center)[
+      $(q, w, Z) tack.r^*_M (p, lambda, lambda) "sii" [q Z p] =>^*_G w$
+    ]
+  ]
+  
+  - $implica)$ Veamos por inducción sobre i que vale: 
+    
+    #align(center)[
+        Si $(q, w, Z) tack.r^i_M (p, lambda, lambda) "entonces" [q Z p] =>^*_G w$
+    ]
+
+    - Caso base: i = 1
+
+      En este caso, tenemos que $(q, x, Z) tack.r^1_M (q, lambda , lambda)$, por lo que $(q, lambda) in delta(q, x, Z)$, entonces, 
+      
+      por definición de G, tenemos que, $[q Z p]  -> x. "Por lo tanto, " [q Z q] =>_G x$
+
+    - Paso inductivo:\
+
+      Sea $w = x alpha$, con $alpha in Sigma*$, tenemos que $(q, w, Z) tack.r^i_M (p, lambda, lambda)$. Sean $Y_1...Y_k in Gamma$, tenemos que necesariamente el primer 
+      movimiento del apd debe ser :
+
+      #align(center)[
+        $(q, x alpha, Z) tack.r_M (q_1, alpha, Y_1...Y_k) tack.r^(i - 1)_M (p, lambda, lambda)$
+
+      ]
+
+      Descomponiendo a $alpha = alpha_1...alpha_k$ tales que $alpha_j$ es el input consumido al terminar de popear a $Y_j$ de la pila, y sean $p_j " y " p_(j + 1)$ los estados cuando se popea $Y_j$, y cuando se termina se tiene a $Y_(j + 1)$ al tope, respectivamente. Tenemos que:
+      #align(center)[
+        $(q_i, alpha_j, Y_j) tack.r^(k_i)_M (q_(j + 1), lambda, lambda)$
+        
+      ]
+
+      
+      Pero como $k_i lt i$, tenemos:
+      #align(center)[
+        Si $(q_i, alpha_j, Y_j) tack.r^(k_i)_M (q_(j + 1), lambda, lambda)$ entonces $[q_j Y_j q_(j + 1)] =>^*_G alpha_j$
+      ]
+
+      Como en G se tiene la producción $[q Z p] -> x [q_1 Y_1 q_2]...[q_k Y_k p]$, tenemos que podemos armar la derivación:
+
+      #align(center)[
+        $[q Z p] => x [q_1 Y_1 q_2] [q_2 Y_2 q_3]...[q_k Y_k p] =>^* x alpha_1 [q_2 Y_2 q_3]... [q_k Y_k p] =>^* x alpha_1 alpha_2 ...alpha_k = w$
+      ]
+
+    - $implicaVuelta)$ Veamos por inducción sobre i que vale:
+
+    #align(center)[
+      Si $[q Z p] =>^i w$ entonces $(q, w, Z) tack.r^*_M (p, lambda, lambda)$
+      ]
+    
+    - Caso base: i = 1
+      
+      En este caso, tenemos que $[q Z p] =>^1 x$, por lo que necesariamente $[q Z p] -> x $ es una producción de G y por definición$(q, x, Z) tack.r_M (p, lambda, lambda)$, por lo que $(q, x, Z) in delta(q, x, Z)$
+
+    - Paso inductivo:
+
+      Tenemos que $[q Z p] =>^i_G  w$, pero sabemos que necesariamente el primer paso de la derivación debe ser y ser continuada por una derivación del estilo: 
+        #align(center)[ 
+          
+          $
+          [q Z p] => x [q_1 Y_1 q_2]...[q_n Y_n p] =>^(i-1)  w
+          $
+
+        ]
+
+
+        Sea entonces $w = x w_1 ... w_n$ de manera tal que, para $1 lt.eq j lt.eq n, k_i lt i$ se cumpla que:
+          #align(center)[
+            $[q_j Y_j q_(j + 1)] =>^(k_i) w_j$ (Es decir, la variable deriva en $w_j$)
+
+          ]
+        Por H.I, tenemos que se cumple que, $(q_j, w_j, Y_j) tack.r^*_M (q_(j+1), lambda, lambda)$
+
+        Notemos que también se cumple que  $(q_j, w_j, Y_j Y_(j+1)...Y_n) tack.r^*_M (q_(j+1), lambda, Y_(j+1)...Y_n)$
+
+        Por lo que tenemos por como construimos G que hay un cambio de configuración: 
+
+        #align(center)[
+                    $(q, x, Z) tack.r_M (q_1, lambda, Y_1...Y_n)$
+        ]
+
+        Juntando todo:
+        #align(center)[
+          $(q, x w_1...w_n, Z) tack.r_M (q_1, w_1...w_n, Y_1...Y_n) tack.r^*_M (p, lambda, lambda)$
+        ]
+
+
+  Con el lema probado, podemos tomar q = $q_0$ y Z = $Z_0$ tal que nos queda:
+
+  #align(center)[
+    $(q_0, w, Z_0) tack.r^*_M (p, lambda, lambda) "sii" [q_0 Z_0 p] =>^*_G w$
+  ]
+
+  Por la definición de G, $S -> [q_0 Z_0 p] in P$, luego:
+
+  #align(center)[
+    $(q_0, w, Z_0) tack.r^*_M (p, lambda, lambda) "sii" S =>^*_G w$
+  ]
+
+  Que es equivalente a decir que:
+    #align(center)[
+    $w in LenguajeDe_lambda (M) "sii" w in LenguajeDe(G)$
+  ]
+  ]
+
+  == Autómatas de pila deterministicos 
+    #definition[Un autómata de pila es determinístico si para todo estado q, símbolo x y Z en la pila se cumple que:
+
+      - #$delta(q, x, Z) lt.eq 1$ (tiene a lo sumo un movimiento a partir de cada configuración)
+      - #$delta(q, lambda, Z) lt.eq 1$ (tiene a lo sumo un movimiento que no consuma la cadena a partir de cada configuración)
+      - Si #$delta(q, lambda, Z) = 1$, entonces #$delta(q, x, Z) = emptyset$ 
+
+    ]
+
+    #theorem[No es cierto que para todo APD no determinístico exista otro determinístico que reconozca el mismo lenguaje]
+
+    #theorem[Si L es un lenguaje regular, entonces existe un APD P determinístico tal que $LenguajeDe(P) = L$]
+
+    #proof[La idea es sencilla, se construye un APD que esencialmente ignora la pila para simular un AFD. De manera más formal, sea A = #tupla un AFD, constrimos el APD determinístico P = $angle.l Q, Sigma, {Z_0}, delta_P, q_0, Z_0, F angle.r$ tal que:
+
+      - $delta_P (q, x, Z_0) = {(delta(q, x), Z_0)}$
+   
+    Lo único que quedaría es probar por inducción sobre |w| que:
+    #align(center)[
+      $(q_0, w, Z_0) tack.r^*_P (p, lambda, Z_0) "sii" deltaSombrero(q_0, w) = p$
+    ]
+]
+
+  #definition[ Un lenguaje L tiene la propiedad del prefijo sii para todo par de cadenas no nulas x e y, se cumple que 
+    
+    #align(center)[
+      $x in L implica x y in.not L $
+
+    ]
+  ]
+
+  #theorem[Un lenguaje L es $LenguajeDe_lambda (P)$ para algun APD determinístico P, si y solo si L tiene la propiedad del prefijo y existe algún APD determinísto $P_2$ tal que $LenguajeDe(P_2) = L$] <pref>
+
+  #theorem[Los lenguajes aceptados por APDs determinísticos incluyen a los regulares, y están incluidos en los libres de contexto] <det2>
+
+  #theorem[Si L = $LenguajeDe_lambda (P)$, para algún APD determinístico P, entonces L tiene una GLC no ambigua]
+
+  #proof[ El plan va a ser probar que la construcción utilizada en @apglc produce una GLC no ambigua cuando se basa en APD determinístico. Primero, recordemos que por @unambiguous tenemos que va a ser suficiente demostrar que tiene únicas derivaciones a izquierda para probar que G no es ambigua. 
+  
+  Supongamos entonces que P acepta la cadena $w$ por pila vacía, tenemos que lo hace en una única secuencia de movimientos, pues es determinístico, por lo que podemos determinar qué producción permite que G derive a w. 
+  
+  Nunca va a haber más de una opción para qué cambio de configuración motivó la producción a utilizar, pero sí podemos tener más de una posible producción para un cambio dado. Por ejemplo, supongamos $delta(q, alpha, X) = {(r, Y_1...Y_k)}$, tenemos que para este movimiento tenemos todas las producciones en G, causada por todos los posibles órdenes en los que pueden estar los estados de P. 
+  
+  Sin embargo, solo una de estas producciones va a representar realmente los cambios realizados por P (pues si en algún momento tuviera más de una opción que lo llevara a aceptar w, el mismo no sería determinístico), luego, solo una de estas producciones realmente derivan en w.
+  ]
+
+  #theorem[Si L = $LenguajeDe(P)$ para algun APD determinístico P, entonces L tiene una gramática no ambigua]
+
+  #proof[
+    Hagamos uso de un símbolo especial \$ tal que no aparezca en las cadenas de L, y definamos L´ = L\$. Tenemos entonces que necesariamente L´ cumple la propiedad del prefijo, y, por @pref, tenemos que existe un P´ tal que L´ = $LenguajeDe_lambda (P´)$. Además, por @det2 tenemos que existe una gramática G´ que genera el lenguaje de pila vacía de P´, es decir, L´. 
+
+    Ahora construyamos un autómata G a partir de G´ tal que $LenguajeDe(G) = L$. Para lograr esto, simplemente tenemos que deshacernos de los símbolos especiales \$ en las cadenas. Para lograr esto, podemos tratar estos símbolos como variables en las producciones de G, y hacer que sean la cabeza de una producción cuyo cuerpo es $lambda$, o sea $\$ -> lambda$. 
+
+    El resto de las producciones se mantienen, luego, como $LenguajeDe(G´) = L´, "tenemos que " LenguajeDe(G) = L$. Nos queda determinar no ambigüedad. 
+
+    sin embargo, las derivaciones a izquierda de G son exactamente las mismas que para G´, con la excepción que al final de las derivaciones en G, se toma un paso más para deshacese del símbolo especial. Como tenemos que G´ es ambigua, G necesariamente también lo es.
+    
+  ]
+
+
+  = Propiedades de Lenguajes Libres de Contexto 
+  
+    == Formas normales de GLCs (*Innecesario si repasando para final*)
+      #align(center)[*El contenido en esta sección (más allá de la mención de las formas normales), \ 
+      no se dictó en el segundo cuatrimestre de 2024 de la materia y es solo por interés personal*]
+
+    #definition[Llamamos forma normal de Chomsky a una producción la cual, siendo A, B, C variables, y $a$ un símbolo terminal, es de alguna de las siguientes formas: 
+      #align(center)[
+
+        - $A -> B C$
+        - $A -> a$
+      ]
+    ]
+
+    El objetivo de esta sección va a ser demostrar que todo lenguaje libre de contexto (sin $lambda$) generado por una GLC G, es generado por otra en cuyas producciones estén todas en forma normal de Chomsky. Para lograrlo, vamos a:
+
+    + Eliminar símbolos inútiles
+    + Eliminar producciones $lambda$
+    + Eliminar producciones unitarias 
+
+    === Eliminando símbolos inútiles
+      #definition[Decimos que un símbolo X es útil para una gramática G si hay alguna derivación tal que $s =>^* alpha X beta =>^* w$, para algún $w in V^*_T$ (es decir, es parte de alguna forma sentencial). Notar que X puede o ser una variable o un símbolo terminal.]
+
+      Si un símbolo no es útil, decimos que es inútil. Claramente, evitar estos símbolos no afecta el lenguaje generado por la gramática.
+      
+      El proceso que vamos a utilizar para eliminar estos símbolos empieza por la identificación de dos propiedades que todo símbolo necesita para ser útil:
+
+      + Decimos que un símbolo X está generando si se tiene que $X =>^* w$, para alguna cadena $w$. Notar que todo terminal está generando, pues deriva en sí mismo en 0 pasos 
+      + Decimos que X es alcanzable si existe una derivación $S => alpha X beta$, para $alpha, beta in (V_N union V_T)^*$
+
+      #theorem[
+        
+        Sea G una GLC, tal que $LenguajeDe(G) eq.not emptyset$; Sea $G_1 = angle.l V_(N 1), V_(T 1), P_1, S_1 angle.r$ la gramática obtenida a partir de:
+
+          + Eliminar todos los símbolos inútiles, y toda producción que contenga a uno o más de esos símbolos
+          + Eliminar todos los símbolos no alcanzables en la gramática resultante del proceso anterior 
+        
+        Entonces $G_1$ no tiene símbolos inútiles, y $LenguajeDe(G_1) = LenguajeDe(G_2)$
+          
+
+      ]
+
+      #let g1(A) = A_1
+      #let g2(A) = (A)
+      #proof[
+Supongamos, sin pérdida de generalidad,  que X es un símbolo que no es eliminado, es decir, tenemos que $X in (V_(T 1) union V_(N 1))$. Sea $G_2$ la gramática resultante de aplicar la primera regla a G. Como X esta en $G_1$, necesariamente tenemos que $X =>^*_(G_1) w$. Además, tenemos que cada símbolo usado en esta derivación
+también está generando, por lo que $X =>^*_(G_2) w$.
+
+Dado que X no fue eliminado al aplicar la segunda regla, tenemos que hay $alpha, beta$ tales que $S =>^*_(G_2) alpha X beta$, y como todos estos símbolos son alcanzables, tenemos $S =>^*_(G_1) alpha X beta$
+
+Tenemos que todos los símbolos en $alpha X beta$ son alcanzables, y además, como todos están incluidos en $(V_(N 2) union V_(T 2))$, tenemos que están generando. Luego, una derivación del estilo $S =>^*_(G_2) alpha X beta =>^*_(G_2) x w y$
+involucra símbolos alcanzables, pues son alcanzados por algún símbolo de $alpha X beta$, por lo que necesariamente se trata de una derivacíon que también se encuentra en 
+$G_1$, es decir: 
+
+#align(center)[$S =>^*_(G_1) alpha X beta =>^*_(G_1) x w y$]
+   
+Concluimos entonces que X es un símbolo útil que se encuentra en $G_1$. Como X se trataba de un símbolo cualquiera, concluimos también que $G_1$ no tiene símbolos inútiles.
+
+Ahora queda demostrar que $LenguajeDe(G_1) = LenguajeDe(G)$
+
+- $LenguajeDe(G_1) subset.eq LenguajeDe(G)$
+
+    Dado que simplemente eliminamos símbolos y producciones de G, es evidente (hará falta probar que eliminar símbolos y producciones de una gramática genera subconjuntos de su lenguaje?).
+
+- $LenguajeDe(G_1) supset.eq LenguajeDe(G)$
+
+  Tenemos que probar que si $w in LenguajeDe(G) implica w in LenguajeDe(G_1)$. Sin embargo, que una cadena $w$ esté en el lenguaje generado por $G_1$, implica necesariamente que 
+  $S =>^*_(G) w$. Sin embargo, tenemos que todos los símbolos en esta derivación son necesariamente alcanzables y están generando, por lo que $S =>^*_(G_1) w$
+   
+==== Computando símbolos alcanzables y generadores 
+#definition[Sea G una gramática, para computar los símbolos generadores de G hacemos uso de la siguiente inducción: 
+
+  - Caso base:
+      Todo símbolo en $V_T$ es generador, pues se genera a sí mismo 
+
+  - Paso inductivo: 
+
+      Sea $A -> alpha$ una producción de G, y sea todo símbolo en $alpha$ un símbolo que ya fue reconocido como generador, entonces A es un generador.
+]      
+      
+#theorem[El algoritmo propuesto solo encuentra todos los símbolos generadores]
+
+#proof[ En otras palabras, queremos demostrar que el algoritmo encuentra un 
+símbolo X sii X es generador. 
+
+$implica$) Por como definimos el algoritmo, tenemos que necesariamente el símbolo encontrado debe ser generador (Se puede hacer induccion en el orden en el que se agragaron los símbolos para algo más formal, pero lo veo inecesario)
+
+$implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$. Probamos por recursión en el largo de la derivación que X es encontrado por el algoritmo.
+
+  - Caso base: i = 0
+      
+      Tenemos entonces que X $in V_T$, por lo que es un generador de sí mismo 
+  
+  - Caso i = n, n $gt$ 0:
+
+    Como n $gt$ 0, tenemos que X es una variable. Sea entonces la derivación $X => alpha =>^* w$, 
+    es decir, la primera produccion utilizada para la derivación es $X -> alpha$. Tenemos que cada símbolo en $alpha$ genera  
+    o an símbolo terminal de $w$, o a $lambda$, además, cada una de estas derivaciones toma menos de i pasos, por lo que por H.I sabemos
+    que el algoritmo los reconoce como generadores. Luego, en el paso inductivo del algoritmo, el mismo va a reconocer a X como generador al considerar la producción $X -> alpha$
+      
+
+
+]]
+
+#definition[Sea G una gramática, para computar los símbolos alcanzables hacemos uso de la inducción:
+
+  - Caso base: 
+
+      S es alcanzable 
+  
+  - Paso inductivo: 
+
+      Supongamos que descubrimos que A es alcanzable, entonces tenemos que para todas las producciones con A en la cabeza, se cumple que todos los símbolos en ellas son alcanzables
+
+]
+
+#theorem[El algoritmo propuesto solo encuentre todos los símbolos alcanzables]
+
+=== Eliminando producciones $lambda$
+    #definition[Decimos que una variable A es anulable si $A =>_* lambda$]
+
+    #definition[Sea G una gramática, para computar los símbolos anulables aplicamos el siguiente algoritmo iterativo: 
+    
+    - Base: 
+
+        Si $A -> lambda$ es una producción de G, entonces A es anulable
+    
+    - Paso inductivo: 
+
+        Si hay una producción $B -> C_1...C_k$ donde cada $C_i$ es anulable, entoces B es anulable
+    ]
+
+    #theorem[El algoritmo encuentra un símbolo A sii es anulable]
+
+    #proof[
+
+      - $implica)$ Por inducción en el orden en el que es encontrado 
+
+      - $implicaVuelta)$ Por inducción en el mínimo i tal que $A ->^i lambda$:
+
+        - Caso base i = 1: 
+
+            En este caso tenemos que necesariamente $A -> lambda$ es una producción de G, por lo que es descubierta en el paso base
+
+        - Caso i = n, n $gt$ 1:
+
+            Tenemos que $A =>^n lambda$. El primer paso de la derivación debe ser del estilo $A => C_1...C_k =>^(n - 1) lambda$. Tenemos entonces que cada $C_i$ deriva en $lambda$ en menos de n pasos, por lo que, por H.I, tenemos que el algoritmo lo identifica como anulable. Finalmente, el algoritmo determina a A como símbolo anulable mediante la producción $A -> C_1...C_k$ 
+    
+    ]
+
+    #theorem[Sea G = $angle.l V_N, V_T, P, S angle.r$ una GLC, existe una GLC $G ´ = angle.l V_N, V_T, P´, S angle.r$ tal que  G´ no tenga símbolos inútiles y $LenguajeDe(G´) = LenguajeDe(G) - {lambda}$]
+    #proof[Primero definimos P´ (pues es la única modificación en comparación a G). 
+    
+    Una vez identificados los símbolos inútiles, definimos P´ tal que:
+
+    - Por cada producción $A -> X_1 X_2 ... X_k$, con $k gt.eq 1$, sea m la cantidad de símbolos anulables en el cuerpo de la producción, entonces P´ va a tener $2^m$ versiones de esta producción, una por cada posible combinación en la que uno o más de los símbolos anulables no están presente (representando así el hecho de haber tomado estas producciones en G, y luego seguir hasta llegar a $lambda$)
+    - Si tenemos que m = k, (todos los símbolos son anulables), entonces va a haber una menos, pues el caso en el que se tomaron todas hasta llegar a $lambda$ no está incluido 
+    
+    Queremos ahora probar que $w in LenguajeDe(G´) sii w in LenguajeDe(G) - {lambda}$. Para ello. vamos a probar primero que: 
+      #align(center)[$A =>^*_(G´) w "sii" A =>^*_G w$ y $w eq.not lambda$]
+    
+    - $implica$)
+
+      Tenemos $A =>^i_(G´) w$, por lo que necesariamente $w eq.not lambda$ ya que G´ no tienen producciones $lambda$. Probamos ahora por inducción sobre el largo de la derivación que $A =>^*_(G) w$:
+
+        - Caso base i = 1: 
+            En este caso tenemos que hay una producción $A ->_(G´) w$ en P´. Por como construimos G´, tenemos que G debe tener una producción $A -> alpha$ tal que los símbolos de w se encuentren en el cuerpo de la producción, y que haya cero o más símbolos anulables entre ellos, por lo que tenemos que $A =>_G alpha =>^*_G w$ (el resto de los símbolos derivan en $lambda$)
+        
+        - Caso i = n, n $gt 1$: 
+            Tenemos entonces que la derivación es de la forma $A =>_(G´) X_1...X_k =>^*_(G´) w$. Por definición de P´, tenemos que
+            la primera producción utlizada para esta derivación debe haber sido construida a partir de una producción en G del estilo $A -> Y_1...Y_j$, donde la secuencia de Ys son los Xs, ordenados, pero con cero o mas símbolos anulables entre sí. 
+
+            Sea entonces $w = w_1...w_k$ una descomposición de $w$ tal que $X_l =>^*_(G´) w_l$. 
+            Tenemos que o bien $X_l$ es una variable, o bien es un terminal, pero en ambos casos se puede aplicar la H.I, por lo que sabemos que $X_l =>^*_G w_l$.
+
+            Con esto, podemos construir la siguiente derivación en G:
+              #align(center)[$A =>_G Y_1...Y_j =>^*_G X_1...X_k =>^*_(underbrace(G, H.I)) w_1...w_k = w$]
+
+            Donde el primer paso de la derivación proviene del uso de la priducción $A -> Y_1...Y_j$, que por lo argumentado
+            anteriormente sabemos que existe. El siguiente paso proviene  de la derivación en $lambda$ de todos los símbolos anulables que no son ningunos de los $X_l$, y el último paso proviene de la derivación de estos símbolos en $w_l$, que sabemos está en G también por la H.I   
+    
+    
+    - $implicaVuelta$) Tenemos que $A =>^i_G w$ y $w eq.not lambda$. Probamos ahora por inducción en i que esto implica $A =>^*_(G´) w$
+
+    - Caso base i = 1:
+      En este caso tenemos que $A -> w$ necesariamente es una producción de G y que, como $w eq.not lambda$, también se encuentra en G´, por lo que $A =>_(G´) w$
+
+    - Caso i = n, n > 1:
+      Tenemos entonces que la derivación es del estilo $A =>_G Y_1...Y_m =>^*_G w$. Sea entonces $w = w_1...w_m$ tal que $Y_j =>^*_G w_j$. 
+
+      Sean $X_1...X_k$ aquellos $Y_j$ s, en orden, tales que $w_j eq.not lambda$. Tenemos que por definición de G´ que tiene una producción $A -> X_1...X_k$. 
+      Necesariamente $X_1...X_k =>^*_G w$, pues aquellas variables que ahora no están presente originalmente derivaban en $lambda$ y, como cada una de las derivaciones $X_l =>^* w_l$, toma menos de n pasos, podemos usar la H.I para concluir que: 
+      #align(center)[$A =>_(G´) X_1...X_k =>^*_(underbrace(G´, H.I)) w_1...w_k = w$]
+
+  Terminamos la demostración reemplazando A por S:
+      #align(center)[$w in LenguajeDe(G_1) sii S =>^*_(G´) w 
+      \ sii S =>^*_G and w eq.not lambda sii w in LenguajeDe(G) - {lambda}
+      $]
+
+  ]
+
+  === Eliminando producciones unitarias 
+      #definition[LLamamos produccón unitaria a aquellas producciones de la forma $A -> B$ tal que A y B son variables]
+
+      #definition[LLamamos parejas unitarias a todas las parejas de variables (A, B) tales que $A =>^* B$ usando solo producciones unitarias. Inductivamente: 
+
+        - Base:
+          (A, A) es una pareja unitaria para cualquier variable A 
+        
+        - Inductivo: 
+          Sea (A, B) una pareja que ya se determinó es unitaria, y sea $B -> C$ una producción, con C una variable, entonces (A, C) es una pareja unitaria
+      
+      ]
+
+      #theorem[Sea G una GLC, el algoritmo identifica una pareja unitaria (A, B) sii $A =>^*_G B$ usando solo producciones unitarias]
+
+      #proof[
+        - $implica$) inducción en el orden en el que son agragados
+        
+        - $implicaVuelta$) Tenemos que $A =>^i_G B$, demostramos por inducción sobre i que el algoritmo encuentra la pareja (A, B)
+
+          - Caso base i = 0:
+            Tenemos $A = B$, por lo que la pareja (A, A) es identificada en el caso base 
+          
+          Caso i = n, n > 0: 
+            Tenemos $A =>^n_G B$ solo haciendo uso de producciones unitarias, en particular, 
+            
+            tenemos que la derivación es de la forma: 
+              #align(center)[$A =>^(n - 1)_G C => B$]
+
+            La derivación $A =>^(n-1)_G C$ toma menos de n pasos y solo usa producciones unitarias, por lo que, por H.I, tenemos que 
+            el algoritmo identifica la pareja (A, C). Luego, como necesariamente tiene que estar la producción $C -> B$ en la gramática, el algoritmo identifica por el caso recursivo la pareja (A, B)
+      ]
+
+      #theorem[Sea G una GLC, existe una GLC $G_1 = angle.l V_N, V_T, P_1, S angle.r$ sin producciones unitarias tal que $LenguajeDe(G) = LenguajeDe(G_1)$]
+
+      #proof[
+        Definimos $P_1$ tal que no tenga producciones unitarias, para cada pareja (A, B), si $B -> alpha$ no es una producción unitaria de P, entonces $A -> alpha$ es una producción de $P_1$. 
+
+
+        Ahora queda demostrar que $w in LenguajeDe(G) sii w in LenguajeDe(G_1)$
+        - $implicaVuelta)$ Tenemos $S =>^*_(G_1) w$. Como cada producción en $G_1$ es quivalente a una secuencia de zero o más producciones unitarias en G, tenemos que $alpha =>^*_(G_1) beta " implica  que " alpha =>^*_G beta$ 
+          . Es decir, toda paso en una derivación en $G_1$ puede ser reemplazado por uno o más pasos en G, luego $S =>^*_G w$
+
+        - $implica)$ Tenemos que $w in LenguajeDe(G)$, por lo que sabemos que w tiene una derivación a izquierda, es decir
+          $S =>_L w$. Cada vez que se hace uso de una producción unitaraia para un paso de la derivación, tenemos que la única variable en el cuerpo de la priducción se vuelva la variable
+          más a la izquierda, por lo que es inmediatamente reemplazada. Por lo que podemos separar una derivación en G en una secuencia de pasos donde 0 o más producciones unitarias son seguidas por una no unitaria.
+          Sin embargo, tenemos que son estos mismos pasos los simulados por $G_1$, , ya que la construcción de $P_1$ salta estas derivaciones \"intermedias\" entre las producciones no unitarias.  
+          Por lo que tenemos que $S =>^*_(G_1) w$
+      ]
+
+
+  === Forma normal de Chomsky 
+
+  #definition[Recordando la definición de FNC, tenemos que se trata de una GLC G tal que todas 
+  sus producciones estén en una de dos formas: 
+
+    + $A -> B C$, con todos los símbolos siendo variables 
+    + $A -> a$ , con A una variable y a un terminal 
+
+    Además, G no tiene símbolos inútiles
+  ]
+
+
+  #theorem[Si G es una GLC que contiene al menos una cadena además de $lambda$, entonces hay otra CFG $G_1$ tal que la misma no tiene, producciones lambda, producciones unitarias, ni símbolos inútiles, y se cumple que $LenguajeDe(G_1) = LenguajeDe(G) - {lambda}$] <tt>
+  #proof[Aplicamos, en orden, los siguientes pasos: 
+  
+  + Eliminamos producciones $lambda$
+  + Eliminamos producciones unitarias 
+  + Eliminamos símbolos inútiles  
+  ]
+
+
+  #theorem[Si G es una GLC cuyo lenguaje contiene al menos una cadena además de $lambda$, existe una gramática $G_1$ en FNC tal que $LenguajeDe(G_1) = LenguajeDe(G) - {lambda}$]
+  
+  #proof[ Primero usamos @tt para conseguir una gramática $G_2$ que no tenga producciones $lambda$, producciones unitarias, ni símbolos inútiles, y que cumpla que $LenguajeDe(G_2) = LenguajeDe(G) - {lambda}$. Con esto
+  ahora construimos $G_1$ de la siguiente manera: 
+
+\
+  + Por cada símbolo terminal $a$ en una producción cuyo cuerpo tenga longitud mayor a 2, creamos una nueva variable, A, y agregamos la producción $A -> a$
+    , reemplazando todas las apariciones previas de $a$ por esta nueva variable 
+  
+  + Por cada producción $A -> B_1...B_k$, con k $gt.eq 3$ (observar que son todas variables por el paso anterior), las dividimos en un grupo de particiones introduciendo k - 2 nuevas variables 
+    $C_1...C_(k -2)$, y reemplazamos la producción original por k - 1 producciones nuevas tal que se tenga: 
+      #align(center)[ $A -> B_1 C_1, #h(.8em) C_1 -> B_2 C_2, #h(.8em) ... #h(.8em)  C_(k - 2) -> B_(k - 1) B_k$] 
+  
+  Queremos ahora probar que $w in LenguajeDe(G_2) sii w in LenguajeDe(G_1)$
+  
+  - $implica)$ Si w tiene una derivación en $G_2$, podemos reemplazar las producciones utilizadas en un paso arbitrario, digamos $A -> X_1...X_k$ con una secuencia de producciones en $G_1$. 
+
+    Si $X_i$ es un terminal, entonces tenemos que $G_1$ tiene una variable $B_i$, tal que $B_i -> B_i$. Si k $gt 2$ tenemos que 
+    $G_1$ tiene una secuencia de producciones $A -> B_1 C_1, #h(.8em) C_1 -> B_2 C_2 ...$ donde cada $B_i$ es o bien la variable introducida para representar al 
+    terminal $X_i$ si el mismo era un terminal, o el mismo $X_i$, si se trataba de una variable en $G_2$. Como esta secuencia de producciones simulan cualquier producción 
+    utilizada en algún paso de la derivación de $w$ en $G_2$, tenemos que $w in LenguajeDe(G_1)$
+  
+  - $implicaVuelta$)  
+  ]
+
+  == Lema de Pumping para Lenguajes Libres de Contexto 
+
+    #lema[Sea $G = Gramática(V_N, V_T, P, S)$ una GLC con P $eq.not emptyset$, sea $alpha in (V_N union V_T)^*$ y sea $cal(T)(S)$ un árbol de derivacíon  con altura 
+    h. Sea: 
+    #align(center)[
+
+      $a = max { k : (k = |beta|, A -> beta in P, beta eq.not lambda) #h(.5em) o #h(.5em) (k = 1, A -> lambda in P)}$
+
+    ]
+    Entonces $a^h gt.eq |alpha|$. (Informalmente, como mucho podemos haber usado la produccion con el cuerpo más largo en cada paso de la derivación)
+    ]
+
+    #proof[Por inducción en h. 
+
+      - Caso base, h = 0: 
+       
+        El único árbol de derivación posible es aquél en el que el único nodo es S, por lo que tenemos $a^0 = 1 = |S|$
+
+      - Paso inductivo: 
+        
+        Sea $gamma$ la base del árbol de altura h (es decir, su producción), tenemos que, por H.I: $a^h gt.eq gamma$. Sea $alpha$ entonces el producto Del
+        árbol de altura h + 1.
+
+        #align(center)[*Falta dibujito*]
+
+        Tenemos que, como a lo sumo cada símbolo de $gamma$ pudo haber hecho uso de la produccion más larga (es decir, de longitud $a$) para seguir con la derivación, resulta que: 
+
+        #align(center)[$a |gamma| gt.eq |alpha|$
+        
+        Por H.I, tenemos $a^h gt.eq |gamma|$, por lo que
+        
+        $a^(h+1) = a a^h gt.eq a |gamma| gt.eq |alpha|$]   
+    
+    ]
+
+    #definition[Para todo lenguaje libre de contexto L, existe n $gt$ 0 tal que para toda cadena $alpha in L$ con $|alpha| gt.eq n$ se cumple que:
+
+    - Existe una descomposición de $alpha$ tal que $alpha = r x y z s$
+
+    - $|x y z| lt.eq n$
+
+    - $|x z| gt.eq 1$
+
+    - Para todo $i gt.eq 0$, la cadena $r x^i y z^i s$ pertenece a L. 
+
+    ]
+
+    #proof[Sea G una GLC tal que L = $LenguajeDe(G)$ y sea b = $ max { k : (k = |beta|, A -> beta in P, beta eq.not lambda) #h(.5em) o #h(.5em) (k = 1, A -> lambda in P)}$
+    
+    - Caso $a = 1$:
+        En este caso, tenemos que las únicas producciones de G solo consisten o de un sólo terminal, o de $lambda$, o se tratan de producciones unitarias. Sin importar el caso, tenemos que 
+        la cadena resultante de cualquier derivación en esta gramática tendrá longitud a lo sumo 1, por lo que con n $gt.eq 2$ tenemos que el antecedente del teorema es falso, por lo que el teorema en sí es trivialmente verdadero.
+
+    
+    - Caso $a gt.eq 2$:
+      
+      Tomemos $n = a^(|V_N| + 1)$, y consideremos la cadena $alpha$ tal que $|alpha| gt.eq n$. Sea $cal(T)(S)$ unrbol mínimo de derivación para 
+      $alpha$. Tenemos que, por el lema anterior, que la altura del árbol debe ser al menos $|V_N| + 1$, pues: 
+
+      #align(center)[$a^h gt.eq |alpha| gt.eq n = a^(|V_N| + 1) sii h gt.eq |V_N| + 1$ ]  
+
+      Luego, necesariamente debe haber un camino hacia alguno de los símbolos de $alpha$ producidos, uno de longitud  
+      $h gt.eq |V_N| + 1$, pero como solo hay $|V_N|$ variables, tenemos que debe haber alguno repetido.
+
+      Llamemos A a alguna de estas variables que se repiten en el camino, en particular, escogemos la primera que aparezca recorriendo el árbol de manera ascendente: 
+
+          #align(center)[*Acá falta dibujito :(*]
+
+      La segunda aparición de A da lugar a la cadena $x y z$. Tenemos, además, que esta segunda aparición debe estar a una altura h´ $lt.eq |V_N| + 1$ de la base (por que a esa altura necesariamente tiene que haber ocurrido una repetición de alguna variable), por lo que: 
+      #align(center)[$| x y z | lt.eq a^(h´)lt.eq a^(|V_N| + 1)= n$]
+      
+      Cumpliendo así la primera condición.
+
+      Cuando las cadenas x y z son simultáneamente nulas, tenemos que podemos reemplazar la segunda aparición de A por la primera, "compactando" el árbol, y seguir generando a $alpha$, sin embargo,
+      dijimos que $cal(T)(S)$ era el árbol mínimo que generaba $alpha$, por lo que llegamos a un absurdo. 
+      El absurdo vino de suponer que z y x podían ser simultanemente nulas, por lo que con esto tenemos la segunda condición.
+
+      #align(center)[*Falta dibuuuuu*]
+
+      Finalmente, demostremos que $forall i gt.eq 0, r x^i y z^i s in L,$ por inducción en i:
+
+      - Caso base i = 0: 
+
+        Tenemos que $S =>^* r A s =>^* r y s$, por lo que necesariamente $r y s = r x^0 y z^0 s in L$
+      
+      - Caso i $gt 0$:
+        Tenemos por H.I que $r x^i y z^i s in L$, veamos que vale para i + 1.
+
+        Sabemos que $S =>^* r x^i A z^i s =>^* r x^i y z^i s$, pero también tenemos que, en vez de hacer que A tome el camino de producciones que deriva en $y$, puede volver a derivar $x A z$, es decir: 
+        #align(center)[$S =>^* r x^i A z^i s =>^* r x^i x A z z^i s =>^* r x^(i+1) y z^(i+1) s$]
+
+        Por lo que $r x^(i+1) y z^(i+1) s in L$
+    ] 
+
+  == Propiedades de clausura de Lenguajes Libres de Contexto (#link("https://cs.uwaterloo.ca/~s4bendav/files/CS360S22Lec10.pdf")[Link a Demos más formales])
+  === Unión 
+    #theorem[Si $L_1$ y $L_2$ son lenguajes libres de contexto, $L_1 union L_2$ también lo es]
+    #proof[Como ambos lenguajes son libres de contexto, entonces existen $G_1$ y $G_2$ GLCs tales que $LenguajeDe(G_1) = L_1$ y $LenguajeDe(G_2) = L_2$. Supogamos, sin pérdida de generalidad, que $V_N_1 sect V_N_2 eq emptyset$ Definimos entonces la gramática G = $Gramática(V_N_1 union V_N_2 union {S}, Sigma, P_1 union P_2 union {S -> S_1, S -> S_2}, S)$
+    
+    Puede demostrarse fácilmente por inducción sobre el largo de la cadena $w$ que $w in LenguajeDe(G) sii w in LenguajeDe(G_1) union LenguajeDe(G_2)$
+
+  === Concatenación 
+    #theorem[Si $L_1$ y $L_2$ son lenguajes libres de contexto, $L_1 L_2$ también lo es]
+
+    #proof[Como ambos lenguajes son libres de contexto, entonces existen $G_1$ y $G_2$ GLCs tales que $LenguajeDe(G_1) = L_1$ y $LenguajeDe(G_2) = L_2$. Supogamos, sin pérdida de generalidad, que $V_N_1 sect V_N_2 eq emptyset$ Definimos entonces la gramática 
+    G = $Gramática(V_N_1 union V_N_2 union {S}, Sigma, P_1 union P_2 union {S -> S_1 S_2}, S)$
+    
+    Puede demostrarse fácilmente por inducción sobre el largo de la cadena $w$ que $w in LenguajeDe(G) sii w in LenguajeDe(G_1) LenguajeDe(G_2)$]
+    ]
+
+  === Clausura de Kleene
+    #theorem[Si $L$ es un lenguaje libre de contexto, $L^*$ también lo es]
+    #proof[Como $L$ es un lenguaje libre de contexto, existe G GLC tal que $LenguajeDe(G) = L$. Sea entonces G´ = $Gramática(V_N, Sigma, P union {S -> S S´ | lambda}, S´)$
+    
+    Solo queda demostarr que $w in LenguajeDe(G) sii w in L^*$
+    ]
+
+  === Reversa
+
+    #theorem[Si L es un lenguaje libre de contexto, también lo es $L^R$]
+    #proof[Sea G una GLC cuyo lenguaje es L, construimos $G^R = Gramática(V_N, Sigma, P^R, S)$ donde $P^R$ es el \"reverso\" de cada producción en P. De manera más específica, 
+    si $A -> alpha$ es una producción en G, entonces $A -> alpha^R$ lo es en $G^R$.
+
+    Queda demostrar, por inducción en la cantidad de pasos de la derivación, que $LenguajeDe(G^R) = L^R$
+    ]
+  
+  === Intersección 
+    #theorem[Los lenguajes libres de contexto no están cerrados respecto de la intersección]
+    #proof[
+      Tenemos que $L = {0^n 1^n 2^n | n gt.eq 1}$ no es libre de contexto, pero $L_1 = {0^n 1 ^n 2 ^i | n, i gt.eq 1}$
+      y $L_2 = {0^i 1 ^n 2 ^n | n, i gt.eq 1}$ lo son. 
+    ]
+
+  === Complemento 
+    #theorem[Los lenguajes libres de contexto no son cerrados respecto del complemento]
+    #proof[Si lo fueran, entonces $L_1 sect L_2 eq overline(overline(L_1) union overline(L_2))$ lo sería]
+
+  === Diferencia 
+    #theorem[$L_1$ - $L_2$ no es necesariamente libre de contexto]
+    #proof[Si lo fuera, entonces, como sabemos que $SigmaEstrella$ es libre de contexto, deberíamos tener que $SigmaEstrella - L = overline(L)$ es libre de contexto]
+
+  === Intersección con un lenguaje regular 
+    #theorem[Si L es un lenguaje libre de contexto, y R uno regular, entoces $L sect R$ es libre de contexto]
+    #proof[Sea $P = angle.l Q_P, Sigma, Gamma, delta_P, q_P, Z_0, F_P angle.r$ un autómata de pila para L, y $M = angle.l Q_M, Sigma, delta_A, q_A, F_A angle.r$ un AFD para R, construimpos el APD \  $P´ = angle.l Q_P times Q_M, Sigma, Gamma, delta, (q_P, q_A), Z_0, F_P times F_A angle.r$, donde: 
+    
+    - $delta((q, p), a, X) = {((r,s), gamma) : s = deltaSombrero_A (p, a) and (r, gamma) in delta_P (q, a, X)}$
+
+    Queda demostrar, por inducción sobre la cantidad de movimientos, que $(q_P, w, Z_0) tack.r^*_P (q, lambda, gamma) sii ((q_P, q_A), w, Z_0) tack.r^*_(P´) ((q, deltaSombrero_A (q_A, w)), lambda, gamma)$. 
+     
+     ]
+  
+  == Problemas de decisibilidad para Lenguajes Libres de contexto 
+    - Determinar si un Lenguaje es vacío se puede hacer en orden lineal respecto al tamaño de la representación 
+    - Determinar si una cadena pertenece a un lenguaje se puede hacer en orden cúbico
+    - Determinar si un lenguaje libre de contexto es finito o infinito
+    - Los siguientes problemas no son decidibles: 
+      - Determinar si una GLC es ambigua 
+      - Determinar si un Lenguaje libre de contexto es inherentemente ambiguo 
+      - DEterminar si la intersección de dos lenguajes libres de contexto es ambigua
+      - Determinar si dos lenguajes libres de contexto son iguales
+      - Determinar si un lenguaje libre de contexto es $SigmaEstrella$
+
+= APDs y LCs Determinísticos 
+  
   = Ejercicios (Después debería pasarlo a otro lado)
   + Demostra que $deltaSombrero(q, x y) = deltaSombrero(deltaSombrero(q, x), y)$ para cualquier estado q y cadenas x e y. *Pista*: hacer inducción sobre |y| \
     #proof[Siguiendo la sugerencia: \
@@ -1641,6 +2299,33 @@ Y por lo tanto $w in LenguajeDe(P_F)$
 
   + Un APD está restringido si en toda transición puede incrementar la altura de la pila con a lo sumo un símbolo, es decir, para toda transición $delta(q, w, Z)$ que contiene algún $(p, gamma)$, debe ocurrir que  \ $|gamma| lt.eq 2$. Demostrar que si P es un APD, entonces existe un APD restringido $P_2$ tal que $LenguajeDe (P) = LenguajeDe (P_2)$
 
+  + Demostrar que si P es un APD, entonces existe un APD $P_1$ de un solo estado tal que $LenguajeDe_lambda (P) = LenguajeDe_lambda (P_1)$
 
+  + Suponiendo que P es un APD tal que tiene s estados, t símbolos de pila, y ninguna regla en la cual lo que se apila tenga longitud mayor a u, dar una cota ajustada para la cantidad de variables en la GLC construida según el metodo de la demo.
 
+  + Existe, para todo lenguaje libre de contexto sin $lambda$, una gramática tal que todas sus producciones son 
+    de la forma $A -> B C D$ (un cuerpo con sólo tres variables) o $A -> a$ (cuerpo con sólo un terminal)? Demostrar o dar contraejemplo (*Si no usaaste la sección de FNC salteate este*)
 
+  + Hacer el ej 7.1.11 del libro de Hopcraft 
+
+  + Sea L un lenguaje. Si todas las cadenas de L validan el lema de pumping para lenguajes libres de contexto, ¿Se puede concluir que L es libre de contexto?
+  + Sea L un lenguaje regular. Demostrar que todas las palabras de L validan el Lema de Pumping para lenguajes libres de contexto
+  + Mostrar que $L = {a^p: p " es número primo"}$ no es libre de contexto. *Pista*: Asumir L libre de contexto, y sea n la longitud dada 
+    por el lema de pumping. Sea m el primo mayor o igual a n, considerar $alpha = a^m$ y bombear m+1 veces
+  
+  + Demostrar que hay lenguajes que pueden ser reconocidos con un autómata de dos pilas pero no por uno con sólo una pila. 
+
+  + Demostrar que los lenguajes libres de contexto son cerrados respecto de las siguientes operaciones: 
+    - Ini(L). *Pista:* Comenzar con una FNC para L 
+    - L / a. *Misma que antes*
+
+  
+  + Completar las demostraciones de propiedad de clausuras para lenguajes libres de contexto
+  + Eks 7.3.4 y 7.3.5 del libro 
+  + Dar algoritmos para decidir si: 
+
+    a) L es finito 
+    b) L contiene al menos 100 cadenas 
+    c) Dada una GLC G y una variable A, decidir si A es el primer símbolo en alguna forma sentencial 
+
+  + Demostrar que para cualquier GLC, todos los árboles de derivación oara cadenas de longitud n tienen $2n - 1$ nodos internos 

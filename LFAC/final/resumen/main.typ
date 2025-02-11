@@ -2006,6 +2006,158 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
       - Determinar si un lenguaje libre de contexto es $SigmaEstrella$
 
 = APDs y LCs Determinísticos 
+
+
+  Recordemos la definición de un APD determinístico 
+
+  #definition[Un autómata de pila $P = #apd,$ con: 
+  #align(center)[$delta: Q times (Sigma union {lambda}) times Gamma -> PartesDe(Q times Gamma^*) $]
+  es determinístico si para cada $a in Sigma, q in Q, Z in Gamma$:
+
+  - $delta(q, a, Z)$ contiene a lo sumo un elemento y $delta(q, lambda, Z)$ es $emptyset$
+  O
+  - $delta(q, a, Z) = emptyset$, y $delta(q, lambda,Z)$ contiene a lo sumo un elemento
+  Para facilitar la notación, vamos a escribir $delta(q, a, Z) = (r, gamma)$ en vez de $delta(q, a, Z) = {(r, gamma)}$
+  ]
+
+== APDs determinísticos capaces de leer toda la cadena
+  #lema[Sea $P = apd$ un APD determinístico. Es posible construir un APD determinístico equivalente P´ tal que: 
+    
+    + Para todo $a in Sigma, q in Q´, Z in Gamma´$: 
+      
+      a) O bien $delta´ (q, a, Z)$ contiene exactamente un elemnete y $delta´(q, lambda, Z) = emptyset$
+
+      b) O bien $delta´ (q, a, Z)  = emptyset$ y $delta´ (q, lambda, Z)$ contiene exactamente un elemento 
+
+    + Si $delta´(q, a, Z_0´) = (r, gamma)$, entonces $gamma = alpha Z_0´, alpha in Gamma*$
+  
+  ] <lee>
+
+  #proof[La idea es usar como marcador a $Z_0´$ para evitar que se vacíe la pila. Sea $Gamma´ = Gamma union {Z_0´}, Q´ = Q union {q_0´, q_lambda}. delta´$ queda definida como: 
+  
+    + $delta´(q_0´, lambda, Z_0´) = (q_0, Z_0 Z_0´)$
+
+    + $forall q in Q, Z in Gamma, a in Sigma union {lambda}$ tales que $delta(q, a,  Z) eq.not emptyset$, tenemos que $delta´(q, a,  Z) = delta(q, a,  Z)$
+
+    + Si $delta(q, lambda, Z) - emptyset " y " delta(q, a, Z) = emptyset$, entonces $delta´(q, a, Z) = (q_lambda, Z)$
+
+    + $forall a in Sigma, Z in Gamma´, delta´(q_lambda, a, Z) = (q_lambda, Z)$
+
+    Queda probar que $LenguajeDe(P) = LenguajeDe(P´)$
+  ]
+
+== Configuraciones ciclantes
+  #definition[Decimos que una configuración $(q, w, a)$ de un APD  determinístico P está en un ciclo si, $forall i, i gt.eq 1$, esiste una configuración $(p_i, w, beta_i)$ tal que $|beta_i| gt.eq |alpha|$ y:
+  
+  #align(center)[$(q, w, alpha) tack.r (q_1, w, beta_1) tack.r (q_2, w, beta_2) ... $]
+
+  Es decir, una configuración está en un ciclo si P puede hacer una cantidad infinita de movimientos $lambda$ sin reducir el tamaño de la pila
+  
+  ] <cicla>
+
+  #definition[El siguiente algoritmo detecta configuraciones ciclantes: 
+ 
+  Input: Un APD deterministico P = #apd
+
+  Output: Dado por los siguientes dos conjuntos 
+    + $C_1 = {(q, A) | (q, lambda, A) " es una configuración ciclante, y" exists.not r in F " tal que" (q, lambda, A) tack.r^* (r, lambda, alpha)}$
+    + $C_2 = {(q, A) | (q, lambda, A) " es una configuración ciclante y" (q, lambda, A) tack.r (r, lambda, alpha), "para algún estado final "r}$
+  
+  Método: 
+    Sea $\#Q = n_1, \#Gamma = n_2, y #h(.5em) l$ es la longitud de la cadena más larga que P puede escribir en la pila en un sólo movimiento. 
+    Sea $n_3 = n_1 (n_2^(n_1 n_2 l) - n_2) / (n_2 - 1)$. $n_3$ es la máxima cantidad de movimientos $lambda$ que P puede hacer sin ciclar. 
+
+    + Por cada $q in Q y A in Gamma$ determinar si $(q, lambda, A) tack.r^(n_3) (r, lambda, alpha), $para algún $r in Q, alpha in Gamma^+$. Caso positivo, $(q, lambda, A)$
+      es una configuración ciclante
+    + Si $(q, lambda, A)$ es una configuración ciclante, determinar si existe algún $r in F$ tal que $(q, lambda, A) tack.r^j (r, lambda, alpha), 0 lt.eq j lt.eq n_3.$ Caso positivo, agregarlo a $C_2$, caso negativo, a $C_1$
+
+  ]
+
+  #theorem[El algoritmo correctamente determina $C_1$ y $C_2$]
+
+  #proof[*Pendiente*]
+
+  == APDs determinísticos continuos
+    #definition[Un APD deterministico P = #apd es continuo si para todo $w in SigmaEstrella, exists p in Q, alpha in Gamma^*$ tal que $(q_0, w, Z_0) tack.r^* (p, lambda, alpha).$ En otras palabras, se trata de un autómata que siempre consume toda la cadena de entrada]
+
+    #lema[Sea P = #apd un APD determinístico, existe otro P´ tal que el mismo sea equivalente y continuo]
+    #proof[Supongamos, por @lee, que P siempre tiene un siguiente movimiento. Sea $P´ = (Q union {p, r}, Sigma, Gamma, delta´, q_0, Z_0, F union {p})$, con $delta´$ definida por: 
+
+      + $forall q in Q, a in Sigma, Z in Gamma,  delta´(q,a, Z) = delta(q, a, Z)$
+      + $forall q in Q, a in Sigma, Z in Gamma$ tales que $(q, lambda, Z)$ no sea una configuración ciclante, entonces $delta´(q, lambda, Z) = delta(q, lambda, Z)$
+      + Para todo $(q, Z) in C_1, delta´(q, lambda, Z) = (r, Z)$
+      + Para todo $(q, Z) in C_2, delta´(q, lambda, Z) = (p, Z)$
+      + Para todo $a in Sigma, Z in Gamma, delta´(p, a , Z) = (r, Z)$ y $delta´(r, a, Z) = (r, Z)$
+
+      De esta manera, P´ simula P. Si se entra a una configuración ciclante en P cuyo ciclo pasaba por un estado final, ahora va a ir a parar directamente a p, (desde donde si todavía no consumió toda la cadena va al estado r)  caso contrario va a r directamente, donde va a terminar de consumir la cadena.
+    
+    ]
+
+  == Clausura de APDs determinísticos bajo complemento 
+
+  #theorem[Si L = $LenguajeDe(P)$ para algún APD determinístico P, entonces $overline(L) = LenguajeDe(P´)$ para algún APD determinístico P´
+  
+  
+  
+  ] 
+
+  #proof[Sea P = #apd continuo. Definimos \ P´ = $angle.l Q´, Sigma, Gamma, delta´, q_0´, Z_0, F´angle.r$ donde: 
+  
+      #align(center)[Q´ = {[q, k]: q in Q and k in {0,1,2}}]
+
+    El propósito de k es indicar si entre transiciones con consumo de entrada en P pasó o no por un estado final
+
+      #align(center)[$q_0 = cases([q_0, 0] "si" q_0 in.not F, [q_0, 1] "si" q_0 in F)$ \ 
+     
+      $F´ = {[q, 2]: q in Q}$
+      ]
+
+    0 indica que P no pasó por F
+
+    1 indica que P sí paso por F 
+
+    2 indica que P no pasó por F y P va a seguir leyendo 
+  
+  Para todo $q in Q, [q, 2]$ es un estado final al que llega P´ antes que P lea un nuevo símbolo 
+
+  La función de transición $delta´$ queda definidda por:
+
+    - Si P lee desde q un símbolo $a, delta(q, lambda, Z) = emptyset, y , delta(q, a, Z) = (p, gamma)$ entonces
+
+      $delta´([q, 0], lambda, Z) = ([q,2], Z)$
+
+      P´ acepta la entrada antes de leer $a$ porque P no la aceptó, 
+
+      #align(center)[$delta´([q, 1], a, Z) = delta´([q, 2], a, Z) = cases(([p, 0], gamma) "si" p in.not F, ([p, 1], gamma) "si" p in F)$]
+
+    - Si P no lee desde q símbolo $a, delta(q, lambda, Z) = (p, gamma) , y, delta(q, a, Z) = emptyset$ entonces: 
+
+      #align(center)[$delta´([q, 1], lambda, Z) = ([p,1], gamma) \ 
+                    \ 
+                    delta´([q,0], lambda, Z) = cases(([p, 0], gamma) "si" p in.not F, ([p,1], gamma) "si " o in F) $]
+
+    Para terminar, ahora queda ver que $delta(q_0, w, Z_0) in $
+
+  ]
+
+  = Máquinas de Turing 
+    *Por ahora solo voy a dejar los teoremas y lemas sin probarlos*
+
+    #definition[Una Máquina de Turing (MT) es una tupla $M = angle.l Q, Sigma, Gamma, delta, q_0, B, F angle.r$ donde: 
+
+      - $Q$ es el conjunto finito de estados del controlador finito (o cabeza)
+      - $Sigma$ es el conjunto finito de símbolos de entrada 
+      - $Gamma$ es el conjunto de símbolos de cinta; $Sigma$ es siempre un subconjunto de $Gamma$
+      - $delta$ es la función de transición. Los argumentos de $delta(q, X)$ son un estado q y un símbolo de cinta $X$ y su valor, si está definido, es una tripla $(p, Y, D)$ tal que: 
+        
+        - $p in Q$ es el siguiente estado 
+        - $Y in Gamma$ es el ßimbolo escrito en la celda siendo escaneada, reemplazando cualquier símbolo que estuviese ahí
+        - D es una dirección, L o R, denotando \"derecha\" o \"izquierda\", indicando la dirección en la que se mueve la cabeza
+      - $q_0 in Q$ es el estado inicial 
+      - $B in Gamma, in.not Sigma$ es el símbolo denotando una celda blanca
+      - $F subset Q$ es el conjunto de estados finales  
+    
+    ]
   
   = Ejercicios (Después debería pasarlo a otro lado)
   + Demostra que $deltaSombrero(q, x y) = deltaSombrero(deltaSombrero(q, x), y)$ para cualquier estado q y cadenas x e y. *Pista*: hacer inducción sobre |y| \

@@ -719,8 +719,8 @@ De manera informal, podemos alcanzar, a partir del nuevo estado inicial, cualqui
       $R_(i, j)^0$ es el conjunto de cadenas de un solo caracter o $lambda$. Por lo que la e.r $r_(i, j)^k$ que lo denota será:
        - $nothing$ si no existe ningún $a_i$ que una $q_i$ y $q_j$ y i $eq.not$ j 
        - $lambda$ si no existe ningún $a_i$ que una $q_i$ y $q_j$, pero con i = j
-       - $a_1 | ... | a_p$ con $a_l$ simbolos del alfabeto, si delta(q_i, a_l) = q_j y j $eq.not$ i 
-       - $a_1 | ... | a_p | lambda$ con $a_l$ simbolos del alfabeto, si delta(q_i, a_l) = q_j y j $eq$ i
+       - $a_1 | ... | a_p$ con $a_l$ simbolos del alfabeto, si $delta(q_i, a_l) = q_j$ y j $eq.not$ i 
+       - $a_1 | ... | a_p | lambda$ con $a_l$ simbolos del alfabeto, si $delta(q_i, a_l) = q_j $ y  j $eq$ i
     
     - Paso inductivo: Por H.I tenemos que: 
       #align(center)[
@@ -745,7 +745,7 @@ De manera informal, podemos alcanzar, a partir del nuevo estado inicial, cualqui
     ]
     Luego, tenemos que:
     #align(center)[
-      $LenguajeDe(M) = union.big_(q_j #h(.3em) in #h(.3em) F) LenguajeDe(R_(1,j)^n) = union.big_(q_j #h(.3em) in #h(.3em) F) LenguajeDe(r_(1,j)^n) = LenguajeDe(r_(1,j 1)^n | ... | r_(1,j m)^n)$
+      $LenguajeDe(M) = union.big_(q_j #h(.3em) in #h(.3em) F) R_(1,j)^n = union.big_(q_j #h(.3em) in #h(.3em) F) LenguajeDe(r_(1,j)^n) = LenguajeDe(r_(1,j 1)^n | ... | r_(1,j m)^n)$
     ]
     Por lo que concluimos que $LenguajeDe(M)$ es denotado por la e.r $r_(1,j 1)^n | ... | r_(1,j m)^n$
 ]
@@ -2254,8 +2254,26 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
       ] \ ]
 
   
-  + Sea N un AFND tal que tenga a lo sumo una opción para cualquier estado y símbolo \ (es decir, |$delta(q, alpha)| = 1$), entonces el AFD D construido tiene la misma cantidad de transiciones y estados más las trancisiones necesarias para ir a un  nuevo estado trampa cuando una transición no esté definida para un estado particular 
+  + Sea N un AFND tal que tenga a lo sumo una opción para cualquier estado y símbolo \ (es decir, |$delta(q, alpha)| lt.eq 1$), entonces el AFD D reducido (es decir, solo consiste de aquellos estados alcanzables) construido tiene la misma cantidad de transiciones y estados más las trancisiones necesarias para ir a un  nuevo estado trampa cuando una transición no esté definida para un estado particular 
 
+    #rect[ \ #align(center)[#proof[
+      Voy a justificar este hecho, debería pensar un poco más como demostrarlo más formalmente. 
+
+      Como tenemos que para cada estado q de N y símbolo $a in Sigma$ se cumple que $|delta_N (q, a)| lt.eq 1$, tenemos que aquellos subconjuntos de $PartesDe(Q_N)$ de tamaño mayor a 1 no van a ser alcanzables en D, pues 
+      si lo fuesen implicaría que en N había una transición que permitía llegar a los dos \"al mismo tiempo\". Luego, tenemos que: 
+
+      #align(center)[$delta_D ({q_i, ..., q_k}, a) = union.big^k_(l=i) delta_N (q_l, a)$ 
+
+        (Por lo argumentado antes, i = k necesariamente)
+
+        $delta_D ({q_i}, a) = delta_N (q_i, a)$
+      
+      ]
+
+      Notemos ahora que, por un lado, las transiciones que estaban definidas originalmente se mantienen, pero también hay un nuevo estado alcanzable $emptyset$, en el caso de aquellas transiciones que no 
+      iban a ningún estado originalmente
+
+    ]]]
   + Demostrar que para todo AFND-$lambda$ E existe un AFD D tal que $LenguajeDe(E) = LenguajeDe(D)$ (Usando la demo del libro)
   
     \
@@ -2358,17 +2376,40 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
     \ 
 
     #rect[ \ #align(center)[#align(center)[
-      Noc (_xd_)
+      
+        La cantidad de transiciones puede ser acotada por k + (k + 1)|w|, donde k es la cantidad de transiciones $lambda$ del autómata.
+
+        La justificación es como sigue: Sea p un camino en el grafo entre $q_0$ y algún estado final tal que reconozca la cadena $w$ (sí, me gustaría sacar algo más parecido a las demos de la materia), tenemos que el mismo debe ser del estilo 
+        $p_0e_0p_1e_1...p_(|w|)e_(|w| + 1)p_(|w| + 1),$ donde cada $e_i$ representa atravesar un arco que consuma la cadena, y cada $p_i$ consiste solamente de transiciones $lambda$. Tenemos que, si algúna de los ejes con transiciones $lambda$ se repite en algún $p_i$
+        , siempre se puede existe otro camino en el que no se repite (esencialmente evitar el ciclo), y como no aportaba al reconocimiento de la cadena, podemos hacerlo sin problemas.  luego, cada $p_i$ puede tener a lo sumo un recorrido de longitud k (pues es la cantidad de transiciones $lambda$ distintas)
+        Por lo que tenemos (|w| + 1)k por todos los $p_i$ y |w| por todos los $e_i$.
       ] \ ]]
   + Sea  $E = angle.l Q, Sigma, delta, q_(0), {q_f} angle.r$ un AFND-$lambda$ tal queno haya transiciones hacia $q_0$ ni desde $q_f$. Describir los lenguajes que se obtienen a partir de las siguientes modificaciones: 
 
       a) Agregar una transición $lambda$ desde $q_f$ hacia $q_0$ \
 
+      #rect()[
+        
+        #align(center)[$L^+$]
+      ]
       b) Agregar una transición $lambda$ desde $q_0$ hacia cada estado alcanzables desde $q_0$ (notar que no es sólo aquellos directos) \
+
+      #rect()[
+        Sufijo(L)
+      ]
 
       c) Agregar una transición $lambda$ hacia $q_F$ desde cada estado que tiene un camino  hacia $q_f$ \
 
+      #rect()[
+        
+        #align(center)[prefijo(L)]
+      ]
       d) El autómata obtenido haciendo b) y c) 
+
+      #rect()[
+        
+        #align(center)[Sub(L)]
+      ]
     
   + Demostrar que los lenguajes regulares son cerrados respecto de la concatenación y la clausura de Kleene mediante la construcción de un autómata.
 
@@ -2380,13 +2421,46 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
 
   + Sea L un lenguaje regular, y $a$ un símbolo, llamamos L/$a$ al cociente de L y a al conjunto de cadenas $w$ tales que $w a in L$. Por ejemplo, si L = {a, aab, baa} entonces L/a = {$lambda$, ba}. Demostrar que si L es un lenguaje regular, entonces L/a también.
 
+    #rect()[
+      \
+      #align(center)[#proof[Construimos un nuevo autómata tal que, con excepción de F, es igual, y definimos F´ como el conjunto de estados p tales que $delta(p, a) in F$. Luego, tenemos que $delta´(p, w) in F sii delta(p, w a ) in F$]
+      
+      \ ]
+    ]
+
   + De manera similar, probar que a \\ L es un lenguaje regular, donde a \\ L es el conjunto de cadenas $w$ talesque a$w in L$
+
+    #rect()[
+      \
+      #align(center)[#proof[ $ a w in L sii w^r a in L^r sii w^r in L^r \/ a sii w in (L^r \/ a)^r$
+      
+      Y como tenemos que los lenguajes regulares son cerrados bajo todas estas operaciones, tenemos que el lenguaje resultante es regular. 
+      
+      (No pensé si había algún método más directo, debería considerarlo) ]]
+      
+      \ ]
+
 
   + Demostrar que los lenguajes regulares son cerrados respecto de las siguientes operaciones:
 
     a) $min(L) = {w | w in L$ y no existe $alpha$ tal que $alpha  w in L$}
 
+      #rect()[
+      \
+      #align(center)[#proof[Eliminando todas las transiciones saliendo de estados finales mediante un estado trampa]
+      
+      \ ]
+    ]
+
+
     b) $max(L) = {w | w in L$ y no existe $alpha eq.not lambda$ tal que $w alpha in L$}
+
+    #rect()[
+      \
+      #align(center)[#proof[]
+      
+      \ ]
+    ]
 
     c) init(L) = ${w | "Para algún " x, w x in L}$
 
@@ -2395,20 +2469,90 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
   + Sea L un lenguaje regular, y sea n la constante del Lema de Pumping para L. Determinar veracidad y demostrar: 
 
     a) Para cada cadena z en L, con $|z| gt.eq n$, la descomposición de $z$ en $u v w$, con $|v| gt.eq 1$ y $|u v| lt.eq n$, es única. 
+    
+      #rect()[
+      \
+      #align(center)[#proof[Falso.
+      ]
+      
+      \ ]
+    ]
 
     b) Cada cadena $z$ en L, con $|z| gt.eq n$, es de la forma $u v^i w$ para algún $u, v, w$ con $|v| gt.eq 1$ y $|u v| lt.eq n$ y algún i 
 
+      #rect()[
+      \
+      #align(center)[#proof[verdadero. 
+      
+      Como tenemos que L es regular, cualquier cadena de laogitud al menos n cumple las condiciones del lema de pumping
+      
+      ]
+      
+      \ ]
+    ]
+
     c) Hay lenguajes no regulares que satisfacen la condición afirmada por el Lema de Pumping 
+
+      #rect()[
+      \
+      #align(center)[#proof[verdadero. 
+      
+      
+      ]
+      
+      \ ]
+    ]
 
     d) Sean $L_1, L_2$ lenguajes sobre el alfabeto $Sigma$ tal que $L_1 union L_2$ es un lenguaje regular.
     Entonces $L_1 $ y $L_2$ son regulares.
 
+      #rect()[
+      \
+      #align(center)[#proof[Falso. 
+      Esto no es necesariamente cierto. Por ejemplo, si tomamos $L_1$ como un lenguaje no regular, y $L_2$ como su complemento, tenemos que su union es regular, pues $Sigma^*$ es regular pero que $L_1$ no.
+      
+      ]
+      
+      \ ]
+    ]
+
+
   + Sea $cal(C)$ el mínimo conjunto que contiene todos los lenguajes finitos, y está cerrado por unión finita, intersección, complemento, y concatenación ¿Cuál es la relación entre $cal(C)$ y el conjunto de todos los lenguajes regulares? 
-  + Dar un algoritmo de desición que determine si el lenguaje aceptado por un autómata finito es el conjunto de todas las cadenas del alfabeto 
+
+    #rect()[
+      \
+      #align(center)[#proof[
+
+        De este no tengo mucha idea, puede ser que $cal(C)$ pueda generar cualquier lenguaje regular, pero no estoy seguro. 
+      ]
+      
+      \ ]
+    ]
+
+  + Dar un algoritmo de decisión que determine si el lenguaje aceptado por un autómata finito es el conjunto de todas las cadenas del alfabeto 
+
+    #rect()[
+      \
+      #align(center)[#proof[
+      
+      Una opción es armarse el automata para $Sigma^*$, y después determinar si los dos son iguales. Otra opción es tomar el complemento y ver si es $emptyset$.
+      ]
+      
+      \ ]
+    ]
+
   + Dar un algoritmo de decisión que determine si el lenguaje aceptado por un autómata finito es cofinito 
+
+    #rect()[
+      \
+      #align(center)[#proof[Tomas el complemento del lenguaje y verificas si el mismo cumple las condiciones necesarias de infinitud]
+      
+      \ ]
+    ]
+
   + Demostrar que todo lenguaje regular es libre de contexto. *Pista*: construir una gramática mediante inducción en la cantidad de operadores de una expresión regular 
   + Una GLC es linear a derecha si el cuerpo de cada producción  tiene a lo sumo una variable, y la misma aparece más a la derecha. Es decir, todas las producciones son de la forma $A -> w B$ o $A -> w$.
-    
+    s
     a) demostrar que toda GLC lineal a derecha genera un lenguaje regular. *Pista*: construir un autómata finito $lambda$ que simule la derivación más a izquierda de la gramática, con sus estados representando el símbolo no terminal de la forma sentencial actual.
 
     b) Demostrar que todo lenguaje regular tiene una GLC lineal a derecha. *Pista*: Empezar un AFD y hacer que las variables de la gramática representen estados

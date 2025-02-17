@@ -2550,7 +2550,48 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
       \ ]
     ]
 
-  + Demostrar que todo lenguaje regular es libre de contexto. *Pista*: construir una gramática mediante inducción en la cantidad de operadores de una expresión regular 
+  + Demostrar que todo lenguaje regular es libre de contexto. *Pista*: construir una gramática mediante inducción en la cantidad de operadores de una expresión regular
+
+      #rect()[
+      \
+      #align(center)[#proof[Se puede construir una GLC inductivamente a partir de una e.r r: 
+      
+      - Caso $r = emptyset$: 
+
+        Este no estoy seguro si con simplemente no agregar nada basta 
+
+      - Caso $r = a$: 
+
+        $S -> a$
+
+      - Caso $r = lambda$: 
+
+        $S -> lambda$ 
+
+      - Caso $r = v | t$: 
+
+        $S -> V | T$ 
+
+      - Caso $r = v t$: 
+
+        $S -> V T$ 
+
+      - Caso $r = v^*$:
+
+
+        $S -> S´$
+
+        $S´ -> V S´ | lambda$ 
+
+
+      quedaría demostrar que $w in LenguajeDe(G) sii w in LenguajeDe(r)$
+      ]
+      
+      \ 
+      ]
+
+    ]
+     
   + Una GLC es linear a derecha si el cuerpo de cada producción  tiene a lo sumo una variable, y la misma aparece más a la derecha. Es decir, todas las producciones son de la forma $A -> w B$ o $A -> w$.
     s
     a) demostrar que toda GLC lineal a derecha genera un lenguaje regular. *Pista*: construir un autómata finito $lambda$ que simule la derivación más a izquierda de la gramática, con sus estados representando el símbolo no terminal de la forma sentencial actual.
@@ -2572,9 +2613,24 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
 
     Demosstrar que $LenguajeDe(G)$ es es conjunto de cadenas con una misma cantidad de $a$es que de $b$s
 
-  + Supongamos que G es una GLC sin producciones que tengan a $lambda$ del lado derecho. Si $w$ está en el lenguaje de G, |$w| eq n$ y $S =>^m w$, demostrar que $w$ tiene un arbol de derivación con n + m nodos. 
+  + Supongamos que G es una GLC sin producciones que tengan a $lambda$ del lado derecho. Si $w$ está en el lenguaje de G, |$w| eq n$ y $S =>^m w$, demostrar que $w$ tiene un arbol de derivación con n + m nodos.
+  
+    #rect[
+      \ 
+      #align(center)[
+        #proof[ 
+\
+          Se puede demostrar por inducción sobre la cantidad de pasos en la derivación. Como caso base m = 1 y es obvio q vale. En paso inductivo, se puede seguir las ideas de las demostraciones de quivalencias de derivaciones y árboles para separar la primera derivación en varios $X_i s$ para poder aplicar la H.I. (*Queda pendiente terminar bien este ejercicio*)
+        
+        ]
 
-  + Supongamos lo mismo que en el ej anterior, pero ahora puede haber producciones con $lambda$ en la derecha. Demostrar que un árbol de derivación para $w$ puede tener a lo sumo $n + 2m - 1$ nodos.
+      ]
+
+    ]
+
+    
+
+  + Supongamos lo mismo que en el ej anterior, pero ahora puede haber producciones con $lambda$ en la derecha. Demostrar que un árbol de derivación para $w eq.not lambda$ puede tener a lo sumo $n + 2m - 1$ nodos.
 
   + Demostrar que si $X_1 X_2...X_k =>^* a$ entonces todos los símbolos que provienen de derivar $X_i$ están a la izquierda de todos los que provienen de derivar $X_j$, si $i lt j$. *Pista*: Usar inducción sobre la cantidad de pasos en la derivación
 

@@ -2643,17 +2643,65 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
 
   + Dado un autómata finito $M = AF(Q, Sigma, delta, q_0, F)$, dar un autómata de pila $M' = AP(Q', Sigma, Gamma', delta', q_0', Z'_0, emptyset)$ tal que $LenguajeDe(M) = LenguajeDe_(lambda)(M')$. \
 
+    #rect[
+      \ 
+      #align(center)[
+        #proof[ 
+\
+        Se puede hacer q el autómata opere con un sólo símbolo en la pila, que lo ignore para toda transición, y que todo estado previamente final tenga ahora una transición a un nuevo estado $q_lambda$, que no consuma nada de la cadena y que popee la pila
+        ]
+
+      ]
+\
+    ]
+
   + Consideremos la demostración del teorema que afirma que para cada autómata $M = AP(Q, Sigma, Gamma, delta, q_0, Z_0, F)$ existe un autómata $M'$ tal que $LenguajeDe(M) = LenguajeDe_(lambda)(M')$. \ ¿Si $M$ es determinístico, entonces el autómata $M'$ construido en la demostración también lo es? \
 
+    #rect[
+      \ 
+      #align(center)[
+        #proof[ 
+\
+            No necesariamente, ya que los estados finales podrían haber tenido previamente una transición dada para un símbolo de pila particular, y al agragar transiciones $lambda$ a $q_lambda$ el determinismo del automata se perdió
+        ]
+
+      ]
+      \
+
+    ]
   + Consideremos la demostración del teorema que afirma que dado $M' = AP(Q', Sigma, Gamma', delta', q_0', X_0, emptyset)$ existe un autómata $M$ tal que $LenguajeDe_(lambda)(M') = LenguajeDe(M)$. \ ¿Si $M'$ es determinístico, entonces el autómata $M$ construido en la demostración también lo es? \
 
-  + Demostrar que si P es un APDm entonces existe un APD $P_2$ con solo dos símbolos de pila (es decir $|Gamma_2| = 2$) tal que $LenguajeDe_lambda (P) = LenguajeDe_lambda (P_2)$. *Pista*: Considerar una codificación binaria para la pila 
+    #rect[
+      \ 
+      #align(center)[
+        #proof[ 
+\
+          En este caso tenemos que el determinismo sí se mantiene, ya que las transiciones $lambda$ que agragamos están definidas solo con el nuevo símbolo $Z_0$ en el tope de la pila, y como se trata de un símbolo que no pertenecía al alfabeto de la pila de M´, tenemos que el determinismo se mantiene 
+        ]
 
-  + Un APD está restringido si en toda transición puede incrementar la altura de la pila con a lo sumo un símbolo, es decir, para toda transición $delta(q, w, Z)$ que contiene algún $(p, gamma)$, debe ocurrir que  \ $|gamma| lt.eq 2$. Demostrar que si P es un APD, entonces existe un APD restringido $P_2$ tal que $LenguajeDe (P) = LenguajeDe (P_2)$
+      ]
+      \
 
-  + Demostrar que si P es un APD, entonces existe un APD $P_1$ de un solo estado tal que $LenguajeDe_lambda (P) = LenguajeDe_lambda (P_1)$
+    ]
+  + Demostrar que si P es un AP entonces existe un AP $P_2$ con solo dos símbolos de pila (es decir $|Gamma_2| = 2$) tal que $LenguajeDe_lambda (P) = LenguajeDe_lambda (P_2)$. *Pista*: Considerar una codificación binaria para la pila 
 
-  + Suponiendo que P es un APD tal que tiene s estados, t símbolos de pila, y ninguna regla en la cual lo que se apila tenga longitud mayor a u, dar una cota ajustada para la cantidad de variables en la GLC construida según el metodo de la demo.
+  + Un AP está restringido si en toda transición puede incrementar la altura de la pila con a lo sumo un símbolo, es decir, para toda transición $delta(q, w, Z)$ que contiene algún $(p, gamma)$, debe ocurrir que  \ $|gamma| lt.eq 2$. Demostrar que si P es un AP, entonces existe un AP restringido $P_2$ tal que $LenguajeDe (P) = LenguajeDe (P_2)$
+
+  + Demostrar que si P es un APD, entonces existe un AP $P_1$ de un solo estado tal que $LenguajeDe_lambda (P) = LenguajeDe_lambda (P_1)$
+
+    #rect[
+      \ 
+      #align(center)[
+        #proof[ 
+\
+          Simplemente convertimos $P_1$ a una GLC y después de vuelta a un ap
+        ]
+
+      ]
+      \
+
+    ]
+  + Suponiendo que P es un AP tal que tiene s estados, t símbolos de pila, y ninguna regla en la cual lo que se apila tenga longitud mayor a u, dar una cota ajustada para la cantidad de variables en la GLC construida según el metodo de la demo.
 
   + Existe, para todo lenguaje libre de contexto sin $lambda$, una gramática tal que todas sus producciones son 
     de la forma $A -> B C D$ (un cuerpo con sólo tres variables) o $A -> a$ (cuerpo con sólo un terminal)? Demostrar o dar contraejemplo (*Si no usaaste la sección de FNC salteate este*)
@@ -2661,6 +2709,20 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
   + Hacer el ej 7.1.11 del libro de Hopcraft 
 
   + Sea L un lenguaje. Si todas las cadenas de L validan el lema de pumping para lenguajes libres de contexto, ¿Se puede concluir que L es libre de contexto?
+  
+    #rect[
+      \ 
+      #align(center)[
+        #proof[ 
+\
+          No, que el consecuente del teorema se cumpla no implica que necesariamente lo haga también el antecedente
+        ]
+
+      ]
+      \
+
+    ]
+  
   + Sea L un lenguaje regular. Demostrar que todas las palabras de L validan el Lema de Pumping para lenguajes libres de contexto
   + Mostrar que $L = {a^p: p " es número primo"}$ no es libre de contexto. *Pista*: Asumir L libre de contexto, y sea n la longitud dada 
     por el lema de pumping. Sea m el primo mayor o igual a n, considerar $alpha = a^m$ y bombear m+1 veces
@@ -2681,3 +2743,9 @@ $implicaVuelta)$ Tenemos entonces que X es un generador, es decir, $X =>^i_G w$.
     c) Dada una GLC G y una variable A, decidir si A es el primer símbolo en alguna forma sentencial 
 
   + Demostrar que para cualquier GLC, todos los árboles de derivación oara cadenas de longitud n tienen $2n - 1$ nodos internos 
+
+
+
+
+
+

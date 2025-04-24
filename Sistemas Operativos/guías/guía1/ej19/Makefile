@@ -15,7 +15,7 @@
 
 # Declaramos variables
 CFLAGS += -Wall -Wextra -O0 -ggdb -lm -Wno-unused-variable -Wno-unused-parameter -no-pie
-TARGETS := ej5 ej6 ej8  ej10 ej16 ej17
+TARGETS := server client
 
 # Target default, corre todos los targets de compilación, que declaramos en la variable TARGETS
 all: $(TARGETS)
@@ -41,20 +41,12 @@ $(RUN): run_%: %
 
 # Las flags de compilación con las que deben llamar a gcc están dadas en la variable CFLAGS
 # Se dejan las dependencias de este primer target como ejemplo; completar para los demás
-ej5: ej5.o
-ej6: ej6.o
-ej8: ej8.o
-ej10: ej10.o
-ej16: ej16.o
-ej17: ej17.o
+server: server.o
+client: client.o
 	gcc $(CFLAGS) -o $@ $^
 
 # Para pensar: ¿por qué funciona esto (sin cuerpo)?
 # Pista: https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
-ej5.o: ej5.c
-ej6.o: ej6.c
-ej8.o: ej8.c
-ej10.o: ej10.c
-ej16.o: ej16.c
-ej17o: ej17.c
+server.o: server.c
+client.o: client.c
 .PHONY: all clean $(RUN)

@@ -1,0 +1,101 @@
+open import Data.Nat using (ℕ; zero; suc; _+_)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+
+---- Ej 1
+---- a
+flip : {A B C : Set } → (A → B → C) → B → A → C
+flip f b a = f a b
+
+--- "Dada una forma de conseguir una prueba de C al tener pruebas de A y de B, y dadas pruebas de B y de A, consigo prueba de C"
+--- b
+compose : {A B C : Set} → (B → C) → (A → B) → A → C
+compose f g a = f (g a)
+
+--- Ej 2
+data Bool : Set where
+  false : Bool
+  true : Bool
+--- a
+recBool : {C : Set} → C → C → Bool → C
+recBool cfalse ctrue false = cfalse
+recBool _ ctrue true = ctrue
+
+--- b
+not : Bool → Bool
+not = recBool true false
+
+--- A esto se refiere con evaluar?
+
+nottrue : not true ≡ false
+nottrue = refl
+
+--- Ej 3
+data _×_ (A B : Set) : Set where
+  ⟨_,_⟩ : A → B → A × B
+
+--- a
+recProduct : {C A B : Set} → (A → B → C) → A × B → C
+recProduct f ⟨ x , y ⟩ = f x y 
+
+--- Está bien esto?
+
+---- b
+indProduct : ∀ {A B : Set} {C : A × B → Set} → (∀ (a : A) (b : B) → C (⟨ a , b ⟩)) → ∀ (p : A × B) → C p
+indProduct f ⟨ x , y ⟩  = f x y
+
+--- c
+---- I
+π₁ : {A B : Set} → A × B → A
+π₁ = indProduct (λ a b → a)
+----- II
+π₂ : {A B : Set} → A × B → A
+π₂ = indProduct λ a b → a
+
+---- III
+curry : ∀ {A B : Set} {C : A × B → Set} → (∀ (p : A × B) → C p) → ∀ (a : A) (b : B) → C (⟨ a , b ⟩)
+curry {C = c} f a b = indProduct {C = c} (λ x y → f (⟨ x , y ⟩)) ⟨ a , b ⟩
+
+---- IV
+---- uncurry es directamente indProd
+
+
+---- Ej 4 El tipo vacío es equivalente a una contradicción en cierto sentido
+--- No metemos constructores porque no es posible demostrat una contradicción
+
+data ⊥ : Set where
+
+⊥-elim : {C : Set} → ⊥ → C
+⊥-elim ()
+
+--- Consultar esto
+⊥-noc : ∀ {A B : Set} → (A → ⊥) → A → B
+⊥-noc f x = ⊥-elim (f x)
+  
+---- Ej 5
+data ⊤ : Set where
+  tt : ⊤
+
+indUnit : {C : ⊤ → Set} → C tt → (x : ⊤) → C x
+indUnit c⊤ tt = c⊤
+
+---- Esto está bien? Porqué no me andaba con x explícito?, para que anda tengo que probar que todo x de tipo ⊤ es tt?
+
+--- Ej 6
+data Σ (A : Set) (B : A → Set) : Set where
+  _,_ : (a : A) → B a → Σ A B
+
+--- a) Qué nos dice esto?
+indΣ : { A : Set} { B : A → Set} { C : Σ A B → Set } → (( a : A ) → ( b : B a ) → C (a , b)) → ( p : Σ A B ) → C p
+indΣ f ( x , y ) = f x y
+
+--- b)
+proj₁ : { A : Set} { B : A → Set} → Σ A B → A
+proj₁ = indΣ λ x y → x
+
+--- Cómo pruebo que es correcto? Me tira algo en amarillo pero no sé porqué
+projcorr : {A : Set} {B : A → Set} { a : A }  → proj₁ ( a , _ ) ≡ a
+projcorr = refl
+
+proj₂ : { A : Set} { B : A → Set} → (p : Σ A B ) → B (proj₁ p)
+proj₂ = indΣ λ x y → y
+
